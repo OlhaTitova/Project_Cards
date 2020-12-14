@@ -1,135 +1,144 @@
 class TextArea {
     constructor(rows = 1, classList) {
-        this.area = document.createElement('textarea')
-        this.area.classList = classList
-        this.area.rows = rows
-        return this.area
+        const area = document.createElement('textarea')
+        area.classList = classList
+        area.rows = rows
+        return area
     }
 }
 class Input {
     constructor(type, classList, value, placeholder) {
-        this.input = document.createElement('input')
-        this.input.classList = classList
-        this.input.type = type
-        if (value) this.input.value = value
-        if (placeholder) this.input.placeholder = placeholder
-        return this.input
+        const input = document.createElement('input')
+        input.classList = classList
+        input.type = type
+        if (value) input.value = value
+        if (placeholder) input.placeholder = placeholder
+        return input
     }
 }
 class Select {
     constructor(defaultValue, ...options) {
-        this.select = document.createElement('select')
-        this.select.classList.add('form-select')
+        const select = document.createElement('select')
+        select.classList.add('form-select')
 
-        this.default = document.createElement('option')
-        this.default.innerText = defaultValue
-        this.default.disabled = true
-        this.default.selected = true
-        this.select.appendChild(this.default)
+        const defaultOption = document.createElement('option')
+        defaultOption.innerText = defaultValue
+        defaultOption.disabled = true
+        defaultOption.selected = true
+        select.appendChild(defaultOption)
 
         for (let opt of options) {
             const optTag = document.createElement('option')
             optTag.value = opt
             optTag.innerText = opt
-            this.select.appendChild(optTag)
+            select.appendChild(optTag)
         }
-        return this.select
+        return select
     }
 }
 
 class AutorizationForm {
     constructor() {
-        this.form = document.createElement('form')
+        const form = document.createElement('form')
 
-        this.button = new Input('button', 'btn btn-info', 'Login')
-        this.inputLogin = new Input('email', 'form-control', null, 'example@gmail.com')
-        this.inputPassword = new Input('password', 'form-control', null, 'Password')
+        const inputLogin = new Input('email', 'form-control', null, 'example@gmail.com')
+        const inputPassword = new Input('password', 'form-control', null, 'Password')
+        const button = new Input('button', 'btn btn-info', 'Login')
 
-        this.form.append(this.inputLogin, this.inputPassword, this.button)
-        return this.form
+        form.append(inputLogin, inputPassword, button)
+        return form
     }
 }
 class FilterForm {
     constructor() {
-        this.form = document.createElement('form')
+        const form = document.createElement('form')
 
-        this.searchInput = new Input('text', 'form-control', null, 'Search by header or content')
-        this.status = new Select('Visits', 'All', 'Open', 'Done')
-        this.priority = new Select('Priority', 'None', 'Low', 'Normal', 'High')
+        const searchInput = new Input('text', 'form-control', null, 'Search by header or content')
+        const status = new Select('Visits', 'All', 'Open', 'Done')
+        const priority = new Select('Priority', 'None', 'Low', 'Normal', 'High')
 
-        this.form.append(this.searchInput, this.status, this.priority)
-        return this.form
+        form.append(searchInput, status, priority)
+        return form
     }
 }
 class CreateVisitForm {
     constructor() {
-        this.form = document.createElement('form')
+        const form = document.createElement('form')
 
-        this.createButton = new Input('submit', 'btn btn-success', 'Create')
-        this.closeButton = new Input('button', 'btn btn-secondary btn-sm', 'Close')
-        this.doctors = new Select('Choose a Doctor', 'Cardiologist', 'Dentist', 'Therapist')
-        this.doctors.classList.add('doctors-list')
+        const createButton = new Input('submit', 'btn btn-success', 'Create')
+        const closeButton = new Input('button', 'btn btn-secondary btn-sm', 'Close')
+        const doctors = new Select('Choose a Doctor', 'Cardiologist', 'Dentist', 'Therapist')
+        doctors.classList += ' doctors-list'
 
-        this.visitGoal = new Input('text', 'form-control common pop-up', null, 'Purpose of the visit')
-        this.age = new Input('number', 'form-control common pop-up', null, 'Enter your age')
-        this.name = new Input('text', 'form-control common pop-up', null, 'Name, Surename')
+        const visitGoal = new Input('text', 'form-control common pop-up', null, 'Purpose of the visit')
+        const age = new Input('number', 'form-control common pop-up', null, 'Enter your age')
+        const name = new Input('text', 'form-control common pop-up', null, 'Name, Surename')
 
-        this.visitComment = new TextArea(1, 'form-control common pop-up')
-        this.visitComment.placeholder = 'Short comment'
+        const visitComment = new TextArea(1, 'form-control common pop-up')
+        visitComment.placeholder = 'Comments'
 
-        this.priority = new Select('Priority', 'Low', 'Normal', 'High')
-        this.priority.classList += ' common pop-up'
+        const priority = new Select('Priority', 'Low', 'Normal', 'High')
+        priority.classList += ' common pop-up'
 
-        this.pressure = new Input('text', 'form-control cardiologist pop-up', null, 'Normal pressure')
-        this.bodyWeight = new Input('text', 'form-control cardiologist pop-up', null, 'body weight')
-        this.heartDiseases = new Input('text', 'form-control cardiologist pop-up', null, 'heart diseases')
+        const pressure = new Input('text', 'form-control', null, 'Normal pressure')
+        const bodyWeight = new Input('text', 'form-control', null, 'Body weight')
+        const heartDiseases = new Input('text', 'form-control', null, 'Heart diseases')
+        const cardiologistGroup = document.createElement('div')
+        cardiologistGroup.classList = 'cardiologist-group pop-up'
+        cardiologistGroup.append(pressure, bodyWeight, heartDiseases)
 
-        this.lastVisit = new Input('text', 'form-control dentist pop-up', null, 'dd.mm.yy')
+        const lastVisit = new Input('text', 'form-control dentist pop-up', null, 'Last visit')
 
-        this.fields = [
-            this.doctors,
-            this.name,
-            this.visitGoal,
-            this.age,
-            this.priority,
-            this.pressure,
-            this.bodyWeight,
-            this.heartDiseases,
-            this.lastVisit,
-            this.visitComment,
-            this.createButton,
-            this.closeButton,
-        ]
+        const fields = [doctors, name, visitGoal, age, priority, cardiologistGroup, lastVisit, visitComment, createButton, closeButton]
 
-        for (let field of this.fields) {
-            this.form.appendChild(field)
+        for (let field of fields) {
+            form.appendChild(field)
             if (field.classList.contains('pop-up')) {
                 field.hidden = true
             }
         }
-        return this.form
+        return form
+    }
+}
 
-        // кардиолог: обычное давление, вес тела,заболевания ссс
-        // стоматолог: дата последнего посещения
-        //цель визита, краткое описание, срочность, возвраст, фио
+class Form {
+    constructor(formType) {
+        this.form = this.create(formType)
+    }
+    create(formType) {
+        if (formType === 'autorization') this.form = new AutorizationForm()
+        else if (formType === 'filter') this.form = new FilterForm()
+        else if (formType === 'visit') this.form = new CreateVisitForm()
+        else throw new Error('Incorrect form key.')
+        return this.form
+    }
+    clear() {
+        this.children = this.form.children
     }
 }
 const modal = document.querySelector('.modal-ne-bootstrap')
-const test = new CreateVisitForm()
-modal.appendChild(test)
+const test = new Form('visit')
+test.clear()
+modal.append(test.form)
+// const doctors = document.querySelector('.doctors-list')
+// doctors.addEventListener('change', showFields)
+// function showFields(e) {
+//     const commonFields = document.querySelectorAll('.pop-up.common')
+//     const cardiologistFields = document.querySelector('.cardiologist-group')
+//     const dentistField = document.querySelector('.dentist')
 
-const doctors = document.querySelector('.doctors-list')
-doctors.addEventListener('change', showFields)
-function showFields(e) {
-    const commonFields = document.querySelectorAll('.pop-up.common')
-    for (field of commonFields) {
-        field.hidden = false
-    }
-    const selected = doctors.value
-    if (selected === 'Cardiologist') {
-        const cardiologistFields = document.querySelectorAll('.pop-up.cardiologist')
-        for (let field of cardiologistFields) {
-            field.hidden = false
-        }
-    }
-}
+//     const selected = doctors.value
+//     for (field of commonFields) {
+//         field.hidden = false
+//     }
+//     if (selected === 'Cardiologist') {
+//         cardiologistFields.hidden = false
+//         dentistField.hidden = true
+//     } else if (selected === 'Dentist') {
+//         dentistField.hidden = false
+//         cardiologistFields.hidden = true
+//     } else if (selected === 'Therapist') {
+//         cardiologistFields.hidden = true
+//         dentistField.hidden = true
+//     }
+// }

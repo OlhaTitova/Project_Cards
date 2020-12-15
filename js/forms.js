@@ -43,7 +43,7 @@ class AutorizationForm {
 
         const inputLogin = new Input('email', 'form-control', null, 'example@gmail.com')
         const inputPassword = new Input('password', 'form-control', null, 'Password')
-        const button = new Input('button', 'btn btn-info', 'Login')
+        const button = new Input('submit', 'btn btn-info', 'Login')
 
         form.append(inputLogin, inputPassword, button)
         return form
@@ -112,32 +112,33 @@ class Form {
         else throw new Error('Incorrect form key.')
         return this.form
     }
-    clear() {
-        this.children = this.form.children
+    clear(e) {
+        if (e) e.preventDefault()
+        this.form.reset()
     }
+    submit(destination) {}
 }
-const modal = document.querySelector('.modal-ne-bootstrap')
-const test = new Form('visit')
-test.clear()
-modal.append(test.form)
+
 // const doctors = document.querySelector('.doctors-list')
 // doctors.addEventListener('change', showFields)
 // function showFields(e) {
 //     const commonFields = document.querySelectorAll('.pop-up.common')
 //     const cardiologistFields = document.querySelector('.cardiologist-group')
 //     const dentistField = document.querySelector('.dentist')
-
 //     const selected = doctors.value
+
 //     for (field of commonFields) {
 //         field.hidden = false
 //     }
 //     if (selected === 'Cardiologist') {
 //         cardiologistFields.hidden = false
 //         dentistField.hidden = true
-//     } else if (selected === 'Dentist') {
+//     }
+//     if (selected === 'Dentist') {
 //         dentistField.hidden = false
 //         cardiologistFields.hidden = true
-//     } else if (selected === 'Therapist') {
+//     }
+//     if (selected === 'Therapist') {
 //         cardiologistFields.hidden = true
 //         dentistField.hidden = true
 //     }

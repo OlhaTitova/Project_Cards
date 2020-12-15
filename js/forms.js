@@ -1,3 +1,4 @@
+export { Form }
 class TextArea {
     constructor(rows = 1, classList) {
         const area = document.createElement('textarea')
@@ -102,8 +103,9 @@ class CreateVisitForm {
 }
 
 class Form {
-    constructor(formType) {
+    constructor(formType, formID) {
         this.form = this.create(formType)
+        this.form.id = formID
     }
     create(formType) {
         if (formType === 'autorization') this.form = new AutorizationForm()
@@ -118,10 +120,6 @@ class Form {
     }
     submit(destination) {}
 }
-
-const form = new Form('filter')
-const modal = document.querySelector('.modal-ne-bootstrap')
-modal.append(form.form)
 
 // const doctors = document.querySelector('.doctors-list')
 // doctors.addEventListener('change', showFields)

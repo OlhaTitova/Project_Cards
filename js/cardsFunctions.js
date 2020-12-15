@@ -56,7 +56,7 @@ export async function createVisit(){
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
                             <button class="dropdown-item btn change-card" type="button" data-id="${item.id}">Редактировать</button>
-                            <button class="dropdown-item btn btn-danger delete-card" type="button" data-toggle="modal" data-target="#exampleModal" data-id="${item.id}">Удалить</button>
+                            <button class="dropdown-item btn btn-danger delete-card" type="button" data-toggle="modal" data-target="#confirmModal" data-id="${item.id}">Удалить</button>
                         </div>
                     </div>
             
@@ -89,8 +89,8 @@ function showMore(e) {
 async function deleteVizit(e) {
 
 
-    const btnConfirm = document.querySelector('#confirm');
-    console.log(btnConfirm);
+    // const btnConfirm = document.querySelector('#confirm');
+    // console.log(btnConfirm);
 
     // btnConfirm.onclick()
 
@@ -108,7 +108,7 @@ async function deleteVizit(e) {
         // if(res.status === 200) {
 
 
-        // confirm('Вы уверенны, что хотите удалить визит?');
+        confirm('Вы уверенны, что хотите удалить визит?');
 
             e.target.closest(`[id="${e.target.dataset.id}"]`).remove();
             // sectionVisit.querySelector(`[id="${sectionVisit.dataset.id}"]`).remove();

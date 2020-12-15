@@ -19,7 +19,7 @@ class Input {
 class Select {
     constructor(defaultValue, ...options) {
         const select = document.createElement('select')
-        select.classList.add('form-select')
+        select.classList.add('form-control')
 
         const defaultOption = document.createElement('option')
         defaultOption.innerText = defaultValue
@@ -53,7 +53,7 @@ class FilterForm {
     constructor() {
         const form = document.createElement('form')
 
-        const searchInput = new Input('text', 'form-control', null, 'Search by header or content')
+        const searchInput = new Input('search', 'form-control', null, 'Search by header or content')
         const status = new Select('Visits', 'All', 'Open', 'Done')
         const priority = new Select('Priority', 'None', 'Low', 'Normal', 'High')
 
@@ -74,7 +74,7 @@ class CreateVisitForm {
         const age = new Input('number', 'form-control common pop-up', null, 'Enter your age')
         const name = new Input('text', 'form-control common pop-up', null, 'Name, Surename')
 
-        const visitComment = new TextArea(1, 'form-control common pop-up')
+        const visitComment = new TextArea(2, 'form-control common pop-up')
         visitComment.placeholder = 'Comments'
 
         const priority = new Select('Priority', 'Low', 'Normal', 'High')
@@ -119,27 +119,31 @@ class Form {
     submit(destination) {}
 }
 
+const form = new Form('filter')
+const modal = document.querySelector('.modal-ne-bootstrap')
+modal.append(form.form)
+
 // const doctors = document.querySelector('.doctors-list')
 // doctors.addEventListener('change', showFields)
-// function showFields(e) {
-//     const commonFields = document.querySelectorAll('.pop-up.common')
-//     const cardiologistFields = document.querySelector('.cardiologist-group')
-//     const dentistField = document.querySelector('.dentist')
-//     const selected = doctors.value
+function showFields(e) {
+    const commonFields = document.querySelectorAll('.pop-up.common')
+    const cardiologistFields = document.querySelector('.cardiologist-group')
+    const dentistField = document.querySelector('.dentist')
+    const selected = doctors.value
 
-//     for (field of commonFields) {
-//         field.hidden = false
-//     }
-//     if (selected === 'Cardiologist') {
-//         cardiologistFields.hidden = false
-//         dentistField.hidden = true
-//     }
-//     if (selected === 'Dentist') {
-//         dentistField.hidden = false
-//         cardiologistFields.hidden = true
-//     }
-//     if (selected === 'Therapist') {
-//         cardiologistFields.hidden = true
-//         dentistField.hidden = true
-//     }
-// }
+    for (field of commonFields) {
+        field.hidden = false
+    }
+    if (selected === 'Cardiologist') {
+        cardiologistFields.hidden = false
+        dentistField.hidden = true
+    }
+    if (selected === 'Dentist') {
+        dentistField.hidden = false
+        cardiologistFields.hidden = true
+    }
+    if (selected === 'Therapist') {
+        cardiologistFields.hidden = true
+        dentistField.hidden = true
+    }
+}

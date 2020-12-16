@@ -72,7 +72,7 @@ class CreateVisitForm {
         doctors.classList += ' doctors-list'
 
         const visitGoal = new Input('text', 'form-control common pop-up', null, 'Purpose of the visit')
-        const age = new Input('number', 'form-control common pop-up', null, 'Enter your age')
+        const age = new Input('number', 'form-control common pop-up age-field', null, 'Enter your age')
         const name = new Input('text', 'form-control common pop-up', null, 'Name, Surename')
 
         const visitComment = new TextArea(2, 'form-control common pop-up')
@@ -88,7 +88,7 @@ class CreateVisitForm {
         cardiologistGroup.classList = 'cardiologist-group pop-up'
         cardiologistGroup.append(pressure, bodyWeight, heartDiseases)
 
-        const lastVisit = new Input('text', 'form-control dentist pop-up', null, 'Last visit')
+        const lastVisit = new Input('text', 'form-control last-visit pop-up', null, 'Last visit')
 
         const fields = [doctors, name, visitGoal, age, priority, cardiologistGroup, lastVisit, visitComment, createButton, closeButton]
 

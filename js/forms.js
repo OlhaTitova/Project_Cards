@@ -71,19 +71,19 @@ class CreateVisitForm {
         const doctors = new Select('Choose a Doctor', 'Cardiologist', 'Dentist', 'Therapist')
         doctors.classList += ' doctors-list'
 
-        const visitGoal = new Input('text', 'form-control common pop-up', null, 'Purpose of the visit')
-        const age = new Input('number', 'form-control common pop-up age-field', null, 'Enter your age')
-        const name = new Input('text', 'form-control common pop-up', null, 'Name, Surename')
+        const name = new Input('text', 'form-control common pop-up name', null, 'Name, Surename')
+        const age = new Input('number', 'form-control common pop-up age', null, 'Your age')
+        const visitGoal = new Input('text', 'form-control common pop-up visit-goal', null, 'Visit description')
 
         const visitComment = new TextArea(2, 'form-control common pop-up')
         visitComment.placeholder = 'Comments'
 
         const priority = new Select('Priority', 'Low', 'Normal', 'High')
-        priority.classList += ' common pop-up'
+        priority.classList += ' common pop-up priority'
 
-        const pressure = new Input('text', 'form-control', null, 'Normal pressure')
-        const bodyWeight = new Input('text', 'form-control', null, 'Body weight')
-        const heartDiseases = new Input('text', 'form-control', null, 'Heart diseases')
+        const pressure = new Input('text', 'form-control pressure', null, 'Basic pressure')
+        const bodyWeight = new Input('text', 'form-control body-weight', null, 'Body weight')
+        const heartDiseases = new Input('text', 'form-control diseases', null, 'Heart diseases')
         const cardiologistGroup = document.createElement('div')
         cardiologistGroup.classList = 'cardiologist-group pop-up'
         cardiologistGroup.append(pressure, bodyWeight, heartDiseases)
@@ -114,8 +114,8 @@ class Form {
         else throw new Error('Incorrect form key.')
         return this.form
     }
-    clear(e) {
-        if (e) e.preventDefault()
+    clear(event) {
+        if (event) event.preventDefault()
         this.form.reset()
     }
     async submit(event, destination, obj, transformMethod) {
@@ -125,30 +125,5 @@ class Form {
             if (transformMethod === 'JSON') return await response.json()
             if (transformMethod === 'TEXT') return await response.text()
         } else return false
-    }
-}
-
-// const doctors = document.querySelector('.doctors-list')
-// doctors.addEventListener('change', showFields)
-function showFields(e) {
-    const commonFields = document.querySelectorAll('.pop-up.common')
-    const cardiologistFields = document.querySelector('.cardiologist-group')
-    const dentistField = document.querySelector('.dentist')
-    const selected = doctors.value
-
-    for (field of commonFields) {
-        field.hidden = false
-    }
-    if (selected === 'Cardiologist') {
-        cardiologistFields.hidden = false
-        dentistField.hidden = true
-    }
-    if (selected === 'Dentist') {
-        dentistField.hidden = false
-        cardiologistFields.hidden = true
-    }
-    if (selected === 'Therapist') {
-        cardiologistFields.hidden = true
-        dentistField.hidden = true
     }
 }

@@ -118,7 +118,14 @@ class Form {
         if (e) e.preventDefault()
         this.form.reset()
     }
-    submit(destination) {}
+    async submit(event, destination, obj, transformMethod) {
+        event.preventDefault()
+        const response = await fetch(destination, obj)
+        if (response.status < 300) {
+            if (transformMethod === 'JSON') return await response.json()
+            if (transformMethod === 'TEXT') return await response.text()
+        } else return false
+    }
 }
 
 // const doctors = document.querySelector('.doctors-list')

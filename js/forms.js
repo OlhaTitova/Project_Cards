@@ -105,7 +105,7 @@ class CreateVisitForm {
 class Form {
     constructor(formType, formID) {
         this.form = this.create(formType)
-        this.form.id = formID
+        if (formID) this.form.id = formID
     }
     create(formType) {
         if (formType === 'autorization') this.form = new AutorizationForm()

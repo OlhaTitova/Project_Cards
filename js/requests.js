@@ -6,20 +6,18 @@ const loginBtn = document.querySelector('.btn[data-target="#autorizationModal"]'
 const modal = document.querySelector('.modal-ne-bootstrap')
 const visitForm = new Form('visit', 'create-visit')
 const autorizationForm = new Form('autorization', 'autorization-form')
-loginBtn.addEventListener('click', showAutorizationModal)
+const addedVisits = []
 
-document.addEventListener('DOMContentLoaded', () => {
-    const isAutorizated = checkSessinon('autorizated')
+loginBtn.addEventListener('click', showAutorizationModal)
+document.addEventListener('DOMContentLoaded', checkSession)
+
+function checkSession() {
+    const isAutorizated = localStorage.getItem('autorizated')
     if (isAutorizated) {
         showVisitForm()
         changeButtonText(loginBtn, 'Create visit', 'create visit')
         loginBtn.removeEventListener('click', showAutorizationModal)
     }
-})
-
-function checkSessinon(key) {
-    if (localStorage.getItem(key)) return true
-    else return false
 }
 function changeButtonText(button, text, value) {
     button.innerText = text
@@ -66,6 +64,35 @@ function showVisitForm(event) {
         }
     }
 }
+function validateVisitForm() {
+    const prioritySelect = document.querySelector('#create-visit .priority')
+    if (prioritySelect.value === 'Priority') {
+        const warning = document.querySelector('#warning')
+        if (warning) warning.remove() // проверка для того что бы поле "выбрать приоритет" добавлялось только одно
+        visitForm.form.insertAdjacentHTML('beforeend', '<div id="warning" style="color: tomato"> Необходимо выбрать приоритет</div>')
+        return false
+    }
+    const checkKeys = {
+        name: document.querySelector('#create-visit .name').value,
+        doctor: document.querySelector('#create-visit .doctors-list').value,
+        title: document.querySelector('#create-visit .visit-goal').value,
+        age: document.querySelector('#create-visit .age').value,
+        priority: document.querySelector('#create-visit .priority').value,
+        bp: document.querySelector('#create-visit .pressure').value,
+        bmi: document.querySelector('#create-visit .body-weight').value,
+        heartDiseases: document.querySelector('#create-visit .diseases').value,
+        description: document.querySelector('#create-visit textarea').value,
+        lastVisit: document.querySelector('#create-visit .last-visit').value,
+        isClosed: false,
+    }
+    for (let key in checkKeys) {
+        if (!checkKeys[key].trim()) {
+            // удалаю ключи свойства которых равны пустой строке или пробелу.
+            delete checkKeys[key]
+        }
+    }
+    return checkKeys
+}
 
 async function login(event, form) {
     const email = document.querySelector('#autorization-form  input[type="email"]')
@@ -88,56 +115,24 @@ async function login(event, form) {
     }
 }
 
-function createVisit() {
+visitForm.form.addEventListener('submit', createVisit)
+async function createVisit(event) {
+    event.preventDefault()
+
+    const requestBody = validateVisitForm()
+    if (!requestBody) return
+
     const token = localStorage.getItem('autorizated')
-    visitForm.form.addEventListener('submit', async (event) => {
-        event.preventDefault()
-
-        const prioritySelect = document.querySelector('#create-visit .priority')
-        if (prioritySelect.value === 'Priority') {
-            visitForm.form.insertAdjacentHTML('beforeend', '<div style="color: tomato"> Необходимо выбрать приоритет</div>')
-            return
-        }
-
-        const checkKeys = {
-            name: document.querySelector('#create-visit .name').value,
-            doctor: document.querySelector('#create-visit .doctors-list').value,
-            description: document.querySelector('#create-visit .visit-goal').value,
-            age: document.querySelector('#create-visit .age').value,
-            priority: prioritySelect.value,
-            bp: document.querySelector('#create-visit .pressure').value,
-            weight: document.querySelector('#create-visit .body-weight').value,
-            heartDiseases: document.querySelector('#create-visit .diseases').value,
-            heartDiseases: document.querySelector('#create-visit textarea').value,
-            lastVisit: document.querySelector('#create-visit .last-visit').value,
-        }
-        for (let key in checkKeys) {
-            if (!checkKeys[key].trim()) {
-                delete checkKeys[key]
-            }
-        }
-        const requestObj = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({ ...checkKeys }, null, '\t'),
-        }
-        const data = await visitForm.submit(event, DOMAIN, requestObj, 'JSON')
-        console.log(data)
-    })
-}
-createVisit()
-async function get() {
-    const response = await fetch('https://ajax.test-danit.com/api/v2/cards', {
-        method: 'GET',
+    const requestObj = {
+        method: 'POST',
         headers: {
-            Authorization: `Bearer d6fcc7cd-ddeb-40b8-9cde-465a6f4c5ea3`,
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
         },
-    })
-    console.log(response)
-    const d = await response.json()
-    console.log(d)
+        body: JSON.stringify({ ...requestBody }, null, '\t'),
+    }
+    const data = await visitForm.submit(event, DOMAIN, requestObj, 'JSON')
+    addedVisits.push(data)
+    console.log(data)
+    console.log(addedVisits)
 }
-get()

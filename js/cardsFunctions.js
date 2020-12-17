@@ -1,11 +1,21 @@
 import {VisitTherapist, VisitCardiologist, VisitDentist} from './cardsClass.js';
-import {Modal, ModalConfirm} from './modal.js';
+import {ModalConfirm} from './modal.js';
 export {createVisit};
 
+const DOMAIN = 'https://ajax.test-danit.com/api/v2/cards';
+const token = 'd6fcc7cd-ddeb-40b8-9cde-465a6f4c5ea3';
+
 async function getItems () {
-    const response = await fetch('../json/data.json');
+    const response = await fetch(DOMAIN, {
+    method: 'GET',
+    headers: {
+        'Authorization': `Bearer ${token}`,
+    }});
+
     const items = await response.json();
+    console.log(items);
     return items;
+
 }
 
 async function createVisit(){
@@ -53,81 +63,18 @@ async function createVisit(){
                             <button class="dropdown-item btn change-card" type="button" data-id="${item.id}">Редактировать</button>
                             <button class="dropdown-item btn btn-danger btn-delete-card" type="button" data-toggle="modal" data-target="#confirmModal" data-id="${item.id}">Удалить</button>
                         </div>
-                    </div>
-            
+                    </div>        
                 </div>
-                </div>
+            </div>
         `;
-
+        
         col.querySelector('.btn-show-more').addEventListener('click', showMore);
-        col.querySelector('.btn-delete-card').addEventListener('click', showConfirmModal);
+        col.querySelector('.btn-delete-card').addEventListener('click', createModalConfirm);
         // col.querySelector('.change-card').addEventListener('click', changeVizit);
 
         itemsRow.appendChild(col);
     });
 }
-
-
-const contentNodeConfirm = document.createElement('p');
-contentNodeConfirm.innerText = 'Вы уверенны. что хотите удалить визит?';
-
-
-function showConfirmModal(e) {
-    e.preventDefault();
-    const modalConfirm = new ModalConfirm('confirmModal', 'Удаление', "Да, удалить визит", contentNodeConfirm);
-    // const modal = modalConfirm;
-    // console.log(modalConfirm);
-    const wrapModalConfirm = document.querySelector('#wrap-modal-confirm')
-    wrapModalConfirm.append(modalConfirm);
-};
-
-const deleteVizit = $('#confirmModal').on('show.bs.modal', function (event) {
-    var button = $(event.relatedTarget) ;// Кнопка, запускающая модальное окно
-    console.log(event, event.relatedTarget);
-    var recipient = button.data('id') // Извлечь информацию из атрибутов data- *
-    // При необходимости вы можете инициировать запрос AJAX здесь (а затем выполнить обновление в обратном вызове).
-    // Обновляем содержимое модального окна. Здесь мы будем использовать jQuery, но вместо этого вы можете использовать библиотеку привязки данных или другие методы.
-    var modal = $(this)
-    modal.find('#confirm').data('whatever', recipient)
-    modal.find('.modal-body p').text(recipient)
-})
-
-
-
-// async function deleteVizit(e) {
-
-
-    //const btnConfirm = document.querySelector(`#${id}`);
-    //console.log(btnConfirm);
-
-    // btnConfirm.onclick()
-
-// const sectionVisit = e.target.closest('.visits');
-
-    // console.log(${dataset.id});deleteVizit
-    // console.log(e.target.dataset.id)
-
-    // const cardId = e.target.dataset.id;
-    
-    // const res = await fetch(`https://ajax.test-danit.com/api/v2/cards/${cardId}`, {
-        //     method: 'DELETE',
-        // headers: {
-        //     Authorization: Bearer d6fcc7cd-ddeb-40b8-9cde-465a6f4c5ea3,
-        //   },
-        // });
-        
-        // if(res.status === 200) {
-
-
-        // confirm('Вы уверенны, что хотите удалить визит?');
-
-           // e.target.closest(`[id="${e.target.dataset.id}"]`).remove();
-            // sectionVisit.querySelector(`[id="${sectionVisit.dataset.id}"]`).remove();
-        
-
-    // }
-// }
-
 
 
 //   async function changeVizit (e) {
@@ -140,16 +87,7 @@ const deleteVizit = $('#confirmModal').on('show.bs.modal', function (event) {
     // console.log(e.target.dataset.id); 
     // }
     
-    
-    // const modalForm = new Modal('formModal', 'Анкета');
-    
-    
-    // function showFormModal(e) {
-        //     e.preventDefault();
-        //     const modal = modalForm;
-        //     const wrapModalForm = document.querySelector('#wrap-modal-form')
-        //     wrapModalForm.append(modal);
-        // };
+
 
 function showMore(e) {
     const blockShowMore = e.target.previousElementSibling;
@@ -162,15 +100,52 @@ function showMore(e) {
     }
 }
  
-const modalAuthorization = new Modal('authorizationModal', 'Авторизация');
+function createModalConfirm(event){
+    // console.log(event.target);
+    const modalConfirm = new ModalConfirm('confirmModal', 'Удаление', "Да, удалить визит", event.target.dataset.id);
+    // console.log(modalConfirm.modalId);
+    const wrapModalConfirm = document.querySelector('#wrap-modal');
+    wrapModalConfirm.innerHTML = `
+    <div class="modal fade" id="${modalConfirm.modalId}" tabindex="-1" role="dialog">
+         <div class="modal-dialog">
+           <div class="modal-content">
+             <div class="modal-header">
+               <h5 class="modal-title" id="exampleModalLabel">${modalConfirm.titleModal}</h5>
+               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                 <span aria-hidden="true">&times;</span>
+               </button>
+             </div>
+             <div class="modal-body">
+                <input id="visitId" type="text" hidden>
+                ${modalConfirm.contentNode}
+             </div>
+                ${modalConfirm.contentFooter}
+           </div>
+         </div>
+    </div>
+    `;   
 
-const btnEntrance = document.querySelector('[data-target="#authorizationModal"]');
-btnEntrance.addEventListener('click', showAuthorizationModal);
+    const modal = document.querySelector('#confirmModal');
+    const btnConfirm = modal.querySelector('[data-id]');
+    btnConfirm.addEventListener('click', deleteVisit);
+}
 
+async function deleteVisit(event) {
 
-function showAuthorizationModal(e) {
-    e.preventDefault();
-    const modal = modalAuthorization;
-    const wrapModalAuthorization = document.querySelector('#wrap-modal-authorization')
-    wrapModalAuthorization.append(modal);
-};
+    event.preventDefault();
+
+    // let cardId = event.target.dataset.id;
+    // token = 'd6fcc7cd-ddeb-40b8-9cde-465a6f4c5ea3';
+
+    // const res = await fetch(`https://ajax.test-danit.com/api/v2/cards/${cardId}`, {
+    //         method: 'DELETE',
+    //     headers: {
+    //         'Authorization': `Bearer ${token}`,
+    //       },
+    //     });
+        
+        // if(res.status === 200) {
+
+           document.body.querySelector(`[id="${event.target.dataset.id}"]`).remove(); 
+// }
+}

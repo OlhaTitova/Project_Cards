@@ -1,96 +1,60 @@
-export {Modal, ModalConfirm}
+export {ModalConfirm}
 
 class Modal {
-    constructor(divModal, modalId, titleModal, contentNode) {
+    contentFooter;
+    constructor(modalId, titleModal, contentNode) {
 
         this.modalId = modalId;
         this.titleModal = titleModal;
         this.contentNode = contentNode;
-        
-        divModal = document.createElement('div');
-        console.log(divModal);
-        this.divModal = document.createElement('div');
-        console.log(this.divModal);
-
-
-
-        // const divDialog = document.createElement('div');
-        // const divContent = document.createElement('div');
-        // const divHeader = document.createElement('div');
-        // const modalTitle = document.createElement('h5');
-        // const btnClose = document.createElement('button');
-        // const x = document.createElement('span');
-        // const divBody = document.createElement('div');
-        // const divFooter = document.createElement('div');
-
-        
-        // divModal.className = 'modal';
-        // divModal.setAttribute('id', modalId);
-        // divModal.setAttribute('tabindex', '-1');
-        // divModal.setAttribute('role', 'dialog');
-
-        // divDialog.className = 'modal-dialog';
-
-        // divContent.className = 'modal-content';
-
-        // divHeader.className = 'modal-header';
-
-        // modalTitle.className = 'modal-title';
-        // modalTitle.innerText = titleModal;
-
-        // btnClose.className = close;
-        // btnClose.setAttribute('type', 'button');
-        // btnClose.setAttribute('data-dismiss', 'modal');
-        // btnClose.setAttribute('aria-label', 'buClosetton');
-
-        // x.setAttribute('aria-hidden', "true");
-        // x.innerHTML = "&times;"
-
-        // divBody.className = 'modal-body';
-
-        // divHeader.appendChild(modalTitle);
-        // btnClose.appendChild(x);
-        // divHeader.appendChild(btnClose);
-        // divBody.append(contentNode);
-        // divContent.appendChild(divHeader);
-        // divContent.appendChild(divBody);
-        // divContent.appendChild(divFooter);
-        // divDialog.appendChild(divContent);
-        // divModal.appendChild(divDialog);
-
-        return divModal
     }
 }
 
 class ModalConfirm extends Modal {
-    constructor(divModal, modalId, titleModal, valueConfirm, contentNode){
-    super(divModal, modalId, titleModal, contentNode);
+    constructor(modalId, titleModal, valueConfirm, visitId, contentNode){
+    super(modalId, titleModal, contentNode);
+
+    this.contentFooter = `
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" data-id=${visitId}>Да, удалить визит</button>
+    </div>`;
 
     this.valueConfirm = valueConfirm;
 
-    // const divContent = document.createElement('div');
-    // const divFooter = document.createElement('div');
-    // const btnReject = document.createElement('button');
-    // const btnConfirm = document.createElement('button');
-
-    // divFooter.className = 'modal-footer';
-
-    // btnReject.className = 'btn btn-secondary';
-    // btnReject.setAttribute('type', 'button');
-    // btnReject.setAttribute('data-dismiss', 'modal');
-    // btnReject.innerText = "Закрыть";
-
-    // btnConfirm.className = 'btn btn-primary';
-    // btnConfirm.setAttribute('type', 'submit');
-    // btnConfirm.innerText = valueConfirm;
-
-    // divFooter.appendChild(btnReject);
-    // divFooter.appendChild(btnConfirm);
-    // divContent.appendChild(divFooter);
-
-    // console.log(divModal);
-    console.log(this.divModal);
-
-    // return divModal
+    this.contentNode = '<p>Вы уверенны, что хотите удалить визит?</p>'
     }
 }
+
+const btnEntrance = document.querySelector('[data-target="#authorizationModal"]');
+btnEntrance.addEventListener('click', createModal);
+
+
+function createModal(){
+    
+    const contentNode = 'Привет';
+
+    const modalAuthorization = new Modal('authorizationModal', 'Авторизация', contentNode);
+    // console.log(modalConfirm.modalId);
+    const wrapModalConfirm = document.querySelector('#wrap-modal')
+    wrapModalConfirm.innerHTML = `
+    <div class="modal fade" id="${modalAuthorization.modalId}" tabindex="-1" role="dialog">
+         <div class="modal-dialog">
+           <div class="modal-content">
+             <div class="modal-header">
+               <h5 class="modal-title" id="exampleModalLabel">${modalAuthorization.titleModal}</h5>
+               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                 <span aria-hidden="true">&times;</span>
+               </button>
+             </div>
+             <div class="modal-body">
+             <input id="visitId" type="text" hidden>
+               ${modalAuthorization.contentNode}
+             </div>
+           </div>
+         </div>
+    </div>
+    `;   
+}
+
+

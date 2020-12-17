@@ -1,5 +1,7 @@
+export { VisitTherapist, VisitCardiologist, VisitDentist};
+
 class Visit {
-    constructor(name, doctor, title, description ){
+    constructor(name, doctor, title, description){
         this.name = name;
         this.doctor = doctor;
         this.title = title;
@@ -8,12 +10,12 @@ class Visit {
 }
 
 class  VisitCardiologist extends Visit {
-    constructor(name, title, description, age, bp, bmi, pd) {
+    constructor(name, title, description, age, bp, bmi, heartDiseases) {
         super(name, 'cardiologist', title, description);
         this.age = age;
         this.bp = bp;
         this.bmi = bmi;
-        this.pd = pd;
+        this.heartDiseases = heartDiseases;
     }
 
     renderVisit () {
@@ -37,21 +39,12 @@ class VisitTherapist extends Visit {
 }
 
 class VisitDentist extends Visit {
-    constructor(name, title, description, data) {
+    constructor(name, title, description, lastVisit) {
         super(name, 'dentist', title, description);
-        this.data = data;
+        this.lastVisit = lastVisit;
     }
 
     renderVisit () {
         return  `<p class="card-text"><span class="text-secondary">Дата последнего визита:</span> ${this.data}</p>`;
             }
 }
-
-export { 
-    VisitTherapist, 
-    VisitCardiologist, 
-    VisitDentist 
-};
-
-
-

@@ -1,27 +1,26 @@
-export {Modal, ModalConfirm}
+export { Modal, ModalConfirm }
 
 class Modal {
-    contentFooter;
-    constructor(modalId, titleModal, contentNode) {
-
-        this.modalId = modalId;
-        this.titleModal = titleModal;
-        this.contentNode = contentNode;
+    contentFooter
+    constructor(modalId, titleModal) {
+        this.modalId = modalId
+        this.titleModal = titleModal
+        // this.contentNode = contentNode
     }
 }
 
 class ModalConfirm extends Modal {
-    constructor(modalId, titleModal, valueConfirm, visitId, contentNode){
-    super(modalId, titleModal, contentNode);
+    constructor(modalId, titleModal, valueConfirm, visitId, contentNode) {
+        super(modalId, titleModal, contentNode)
 
-    this.contentFooter = `
+        this.contentFooter = `
     <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
         <button type="button" class="btn btn-primary" data-dismiss="modal" data-id=${visitId}>Да, удалить визит</button>
-    </div>`;
+    </div>`
 
-    this.valueConfirm = valueConfirm;
+        this.valueConfirm = valueConfirm
 
-    this.contentNode = '<p>Вы уверенны, что хотите удалить визит?</p>'
+        this.contentNode = '<p>Вы уверенны, что хотите удалить визит?</p>'
     }
 }

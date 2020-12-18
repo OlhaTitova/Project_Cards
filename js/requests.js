@@ -1,12 +1,12 @@
 'use strict'
 import { Form } from './forms.js'
+import { createModal } from './cardsFunctions.js'
 
 const DOMAIN = 'https://ajax.test-danit.com/api/v2/cards'
-const loginBtn = document.querySelector('.btn[data-target="#autorizationModal"]')
-const modal = document.querySelector('.modal-ne-bootstrap')
+const loginBtn = document.querySelector('[data-target="#authorizationModal"]')
+const createVisitBtn = document.querySelector('[data-target="#formModal"]')
 const visitForm = new Form('visit', 'create-visit')
 const autorizationForm = new Form('autorization', 'autorization-form')
-
 loginBtn.addEventListener('click', showAutorizationModal)
 document.addEventListener('DOMContentLoaded', checkSession)
 
@@ -14,26 +14,33 @@ function checkSession() {
     const isAutorizated = localStorage.getItem('autorizated')
     if (isAutorizated) {
         showVisitForm()
-        changeButtonText(loginBtn, 'Создать визит', 'create visit')
-        loginBtn.removeEventListener('click', showAutorizationModal)
+        // changeButton(loginBtn, 'Создать визит', 'create visit', '#formModal')
+        loginBtn.hidden = true
+        // loginBtn.removeEventListener('click', showAutorizationModal)
     }
 }
-function changeButtonText(button, text, value) {
-    button.innerText = text
-    button.value = value
-}
+// function changeButton(button, text, value, attr) {
+//     button.innerText = text
+//     button.value = value
+//     button.setAttribute('data-target', '#formModal')
+// }
 function showAutorizationModal(event) {
     event.preventDefault()
-    modal.append(autorizationForm.form)
-    loginBtn.removeEventListener('click', showAutorizationModal)
+    createModal(event)
+
+    const modalBody = document.querySelector('#authorizationModal .modal-body')
+    modalBody.append(autorizationForm.form)
+    // loginBtn.removeEventListener('click', showAutorizationModal)
 
     const submitBtn = document.querySelector('#autorization-form  input[type="submit"]')
+    submitBtn.setAttribute('data-dismiss', 'modal')
     submitBtn.addEventListener('click', (event) => login(event, autorizationForm))
 }
 function showVisitForm(event) {
     if (event) event.preventDefault()
-    modal.append(visitForm.form)
-
+    createModal(event)
+    const modalBody = document.querySelector('#formModal .modal-body')
+    modalBody.appendChild(visitForm.form)
     const doctors = document.querySelector('.doctors-list')
     doctors.addEventListener('change', showFields)
     function showFields() {
@@ -127,10 +134,11 @@ async function login(event, form) {
     }
     const getToken = await form.submit(event, `${DOMAIN}/login`, requestObj, 'TEXT')
     if (getToken) {
-        modal.innerHTML = ''
         localStorage.setItem('autorizated', getToken)
-        loginBtn.addEventListener('click', showVisitForm)
-        changeButtonText(loginBtn, 'Создать визит', 'create visit')
+        createVisitBtn.hidden = false
+        loginBtn.hidden = true
+        createVisitBtn.addEventListener('click', showVisitForm)
+        // changeButton(loginBtn, 'Создать визит', 'create visit', '#formModal')
     } else {
         form.form.insertAdjacentHTML('beforeend', `<p style="color: tomato">Неверный логин или пароль</p>`)
     }

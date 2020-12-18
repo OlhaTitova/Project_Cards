@@ -1,4 +1,4 @@
-export {ModalConfirm}
+export {Modal, ModalConfirm}
 
 class Modal {
     contentFooter;
@@ -25,36 +25,3 @@ class ModalConfirm extends Modal {
     this.contentNode = '<p>Вы уверенны, что хотите удалить визит?</p>'
     }
 }
-
-const btnEntrance = document.querySelector('[data-target="#authorizationModal"]');
-btnEntrance.addEventListener('click', createModal);
-
-
-function createModal(){
-    
-    const contentNode = 'Привет';
-
-    const modalAuthorization = new Modal('authorizationModal', 'Авторизация', contentNode);
-    // console.log(modalConfirm.modalId);
-    const wrapModalConfirm = document.querySelector('#wrap-modal')
-    wrapModalConfirm.innerHTML = `
-    <div class="modal fade" id="${modalAuthorization.modalId}" tabindex="-1" role="dialog">
-         <div class="modal-dialog">
-           <div class="modal-content">
-             <div class="modal-header">
-               <h5 class="modal-title" id="exampleModalLabel">${modalAuthorization.titleModal}</h5>
-               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                 <span aria-hidden="true">&times;</span>
-               </button>
-             </div>
-             <div class="modal-body">
-             <input id="visitId" type="text" hidden>
-               ${modalAuthorization.contentNode}
-             </div>
-           </div>
-         </div>
-    </div>
-    `;   
-}
-
-

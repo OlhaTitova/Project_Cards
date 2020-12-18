@@ -6,7 +6,6 @@ const loginBtn = document.querySelector('.btn[data-target="#autorizationModal"]'
 const modal = document.querySelector('.modal-ne-bootstrap')
 const visitForm = new Form('visit', 'create-visit')
 const autorizationForm = new Form('autorization', 'autorization-form')
-const addedVisits = []
 
 loginBtn.addEventListener('click', showAutorizationModal)
 document.addEventListener('DOMContentLoaded', checkSession)
@@ -15,7 +14,7 @@ function checkSession() {
     const isAutorizated = localStorage.getItem('autorizated')
     if (isAutorizated) {
         showVisitForm()
-        changeButtonText(loginBtn, 'Create visit', 'create visit')
+        changeButtonText(loginBtn, 'Создать визит', 'create visit')
         loginBtn.removeEventListener('click', showAutorizationModal)
     }
 }
@@ -47,17 +46,17 @@ function showVisitForm(event) {
         for (let field of commonFields) {
             field.hidden = false
         }
-        if (selected === 'Cardiologist') {
+        if (selected === 'Кардиолог') {
             cardiologistFields.hidden = false
             lastVisitField.hidden = true
             ageField.hidden = false
         }
-        if (selected === 'Dentist') {
+        if (selected === 'Стоматолог') {
             cardiologistFields.hidden = true
             lastVisitField.hidden = false
             ageField.hidden = true
         }
-        if (selected === 'Therapist') {
+        if (selected === 'Терапевт') {
             cardiologistFields.hidden = true
             lastVisitField.hidden = true
             ageField.hidden = false
@@ -66,12 +65,32 @@ function showVisitForm(event) {
 }
 function validateVisitForm() {
     const prioritySelect = document.querySelector('#create-visit .priority')
-    if (prioritySelect.value === 'Priority') {
+    if (prioritySelect.value === 'Срочность') {
         const warning = document.querySelector('#warning')
         if (warning) warning.remove() // проверка для того что бы поле "выбрать приоритет" добавлялось только одно
-        visitForm.form.insertAdjacentHTML('beforeend', '<div id="warning" style="color: tomato"> Необходимо выбрать приоритет</div>')
+        visitForm.form.insertAdjacentHTML('beforeend', '<p id="warning" style="color: tomato"> Необходимо выбрать приоритет</p>')
         return false
     }
+
+    const cardiologistGroup = document.querySelector('.cardiologist-group')
+    if (cardiologistGroup.hidden) {
+        const fields = document.querySelectorAll('#create-visit .form-control:not(.cardio)')
+        checkFields(fields)
+    } else {
+        const fields = document.querySelectorAll('#create-visit .form-control')
+        checkFields(fields)
+    }
+    function checkFields(fields) {
+        for (let field of fields) {
+            if (!field.hidden && field.value.trim() !== '') continue
+            //  проверка пройдена ^
+            else if (!field.hidden && field.tagName !== 'TEXTAREA') {
+                visitForm.form.insertAdjacentHTML('beforeend', `<p class='warning'>Поля со звездочкой необходимы к заполнению</p>`)
+                return false
+            }
+        }
+    }
+
     const checkKeys = {
         name: document.querySelector('#create-visit .name').value,
         doctor: document.querySelector('#create-visit .doctors-list').value,
@@ -86,6 +105,7 @@ function validateVisitForm() {
         isClosed: false,
     }
     for (let key in checkKeys) {
+        if (key === 'isClosed' || key === 'description') continue // trim выдаст ошибку если значением будет boolean.
         if (!checkKeys[key].trim()) {
             // удалаю ключи свойства которых равны пустой строке или пробелу.
             delete checkKeys[key]
@@ -109,7 +129,7 @@ async function login(event, form) {
         modal.innerHTML = ''
         localStorage.setItem('autorizated', getToken)
         loginBtn.addEventListener('click', showVisitForm)
-        changeButtonText(loginBtn, 'Create visit', 'create visit')
+        changeButtonText(loginBtn, 'Создать визит', 'create visit')
     } else {
         form.form.insertAdjacentHTML('beforeend', `<p style="color: tomato">Неверный логин или пароль</p>`)
     }
@@ -122,17 +142,26 @@ async function createVisit(event) {
     const requestBody = validateVisitForm()
     if (!requestBody) return
 
-    const token = localStorage.getItem('autorizated')
-    const requestObj = {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ ...requestBody }, null, '\t'),
-    }
-    const data = await visitForm.submit(event, DOMAIN, requestObj, 'JSON')
-    addedVisits.push(data)
-    console.log(data)
-    console.log(addedVisits)
+    // const token = localStorage.getItem('autorizated')
+    // const requestObj = {
+    //     method: 'POST',
+    //     headers: {
+    //         'Content-Type': 'application/json',
+    //         Authorization: `Bearer ${token}`,
+    //     },
+    //     body: JSON.stringify({ ...requestBody }, null, '\t'),
+    // }
+    // const data = await visitForm.submit(event, DOMAIN, requestObj, 'JSON')
+    // visitForm.clear()
 }
+// async function get() {
+//     const response = await fetch('https://ajax.test-danit.com/api/v2/cards', {
+//         method: 'GET',
+//         headers: {
+//             Authorization: `Bearer d6fcc7cd-ddeb-40b8-9cde-465a6f4c5ea3`,
+//         },
+//     })
+//     const d = await response.json()
+//     console.log(d)
+// }
+// get()

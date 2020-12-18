@@ -43,8 +43,8 @@ class AutorizationForm {
         const form = document.createElement('form')
 
         const inputLogin = new Input('email', 'form-control', null, 'example@gmail.com')
-        const inputPassword = new Input('password', 'form-control', null, 'Password')
-        const button = new Input('submit', 'btn btn-info', 'Login')
+        const inputPassword = new Input('password', 'form-control', null, 'Пароль')
+        const button = new Input('submit', 'btn btn-info', 'Войти')
 
         form.append(inputLogin, inputPassword, button)
         return form
@@ -54,9 +54,9 @@ class FilterForm {
     constructor() {
         const form = document.createElement('form')
 
-        const searchInput = new Input('search', 'form-control', null, 'Search by header or content')
-        const status = new Select('Visits', 'All', 'Open', 'Done')
-        const priority = new Select('Priority', 'None', 'Low', 'Normal', 'High')
+        const searchInput = new Input('search', 'form-control', null, 'Поиск по заголовку или содержимому')
+        const status = new Select('Визиты', 'Все', 'Открытые', 'Зыкрытые')
+        const priority = new Select('Срочность', 'Нет', 'Обычная', 'Приоритетная', 'Неотложная')
 
         form.append(searchInput, status, priority)
         return form
@@ -66,29 +66,29 @@ class CreateVisitForm {
     constructor() {
         const form = document.createElement('form')
 
-        const createButton = new Input('submit', 'btn btn-success', 'Create')
-        const closeButton = new Input('button', 'btn btn-secondary btn-sm', 'Close')
-        const doctors = new Select('Choose a Doctor', 'Cardiologist', 'Dentist', 'Therapist')
+        const createButton = new Input('submit', 'btn btn-success', 'Создать')
+        const closeButton = new Input('button', 'btn btn-secondary btn-sm', 'Закрыть')
+        const doctors = new Select('Выберите врача', 'Кардиолог', 'Стоматолог', 'Терапевт')
         doctors.classList += ' doctors-list'
 
-        const name = new Input('text', 'form-control common pop-up name', null, 'Name, Surename')
-        const age = new Input('number', 'form-control common pop-up age', null, 'Your age')
-        const visitGoal = new Input('text', 'form-control common pop-up visit-goal', null, 'Visit description')
+        const name = new Input('text', 'form-control common pop-up name', null, '* ФИО')
+        const age = new Input('number', 'form-control common pop-up age', null, '* Возвраст')
+        const visitGoal = new Input('text', 'form-control common pop-up visit-goal', null, '* Цель визита')
 
         const visitComment = new TextArea(2, 'form-control common pop-up')
-        visitComment.placeholder = 'Comments'
+        visitComment.placeholder = 'Комментарии'
 
-        const priority = new Select('Priority', 'Low', 'Normal', 'High')
+        const priority = new Select('* Срочность', 'Обычная', 'Приоритетная', 'Неотложная')
         priority.classList += ' common pop-up priority'
 
-        const pressure = new Input('text', 'form-control pressure', null, 'Basic pressure')
-        const bodyWeight = new Input('text', 'form-control body-weight', null, 'Body weight')
-        const heartDiseases = new Input('text', 'form-control diseases', null, 'Heart diseases')
+        const pressure = new Input('text', 'form-control cardio pressure', null, '* Обычное давление')
+        const bodyWeight = new Input('text', 'form-control cardio body-weight', null, '* Индекс массы тела')
+        const heartDiseases = new Input('text', 'form-control cardio diseases', null, '* Болезни сердца')
         const cardiologistGroup = document.createElement('div')
         cardiologistGroup.classList = 'cardiologist-group pop-up'
         cardiologistGroup.append(pressure, bodyWeight, heartDiseases)
 
-        const lastVisit = new Input('text', 'form-control last-visit pop-up', null, 'Last visit')
+        const lastVisit = new Input('text', 'form-control last-visit pop-up', null, '* Последний визит')
 
         const fields = [doctors, name, visitGoal, age, priority, cardiologistGroup, lastVisit, visitComment, createButton, closeButton]
 

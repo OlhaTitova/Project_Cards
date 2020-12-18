@@ -7,3 +7,13 @@
 body {
     font-family: 'Montserrat', sans-serif;
 }
+form :nth-child(odd),
+form :nth-child(even) {
+    margin-bottom: 10px;
+}
+.warning::placeholder {
+    color: tomato;
+}
+.warning {
+    color: tomato;
+}

@@ -65,7 +65,7 @@ function showVisitForm(event) {
 }
 function validateVisitForm() {
     const prioritySelect = document.querySelector('#create-visit .priority')
-    if (prioritySelect.value === 'Срочность') {
+    if (prioritySelect.value === '* Срочность') {
         const warning = document.querySelector('#warning')
         if (warning) warning.remove() // проверка для того что бы поле "выбрать приоритет" добавлялось только одно
         visitForm.form.insertAdjacentHTML('beforeend', '<p id="warning" style="color: tomato"> Необходимо выбрать приоритет</p>')
@@ -75,11 +75,12 @@ function validateVisitForm() {
     const cardiologistGroup = document.querySelector('.cardiologist-group')
     if (cardiologistGroup.hidden) {
         const fields = document.querySelectorAll('#create-visit .form-control:not(.cardio)')
-        checkFields(fields)
+        if (!checkFields(fields)) return false
     } else {
         const fields = document.querySelectorAll('#create-visit .form-control')
-        checkFields(fields)
+        if (!checkFields(fields)) return false
     }
+
     function checkFields(fields) {
         for (let field of fields) {
             if (!field.hidden && field.value.trim() !== '') continue
@@ -140,19 +141,19 @@ async function createVisit(event) {
     event.preventDefault()
 
     const requestBody = validateVisitForm()
+    console.log(requestBody)
     if (!requestBody) return
-
-    // const token = localStorage.getItem('autorizated')
-    // const requestObj = {
-    //     method: 'POST',
-    //     headers: {
-    //         'Content-Type': 'application/json',
-    //         Authorization: `Bearer ${token}`,
-    //     },
-    //     body: JSON.stringify({ ...requestBody }, null, '\t'),
-    // }
-    // const data = await visitForm.submit(event, DOMAIN, requestObj, 'JSON')
-    // visitForm.clear()
+    const token = localStorage.getItem('autorizated')
+    const requestObj = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ ...requestBody }, null, '\t'),
+    }
+    const data = await visitForm.submit(event, DOMAIN, requestObj, 'JSON')
+    visitForm.clear()
 }
 // async function get() {
 //     const response = await fetch('https://ajax.test-danit.com/api/v2/cards', {

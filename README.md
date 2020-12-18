@@ -1,3 +1,9 @@
 # Project_Cards
 
-token Olha: 6ed96c54-671b-4cbb-bc23-7325daddcdf8
+email: example@gmail.com
+password: password
+Token: d6fcc7cd-ddeb-40b8-9cde-465a6f4c5ea3
+
+1. Дописать проверку на строку предупреждения полей со звездочкой
+2. Sumbit > select > reset
+3. По кнопке закрыть очищать форму

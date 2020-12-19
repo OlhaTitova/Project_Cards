@@ -181,9 +181,8 @@ function createModalConfirm(event) {
 // btnEntrance.addEventListener('click', createModal);
 
 export function createModal(e) {
-    if (e) e.preventDefault()
-    console.log(e)
-    console.log('событие контент лоадед произошло')
+    // if (e) e.preventDefault()    а он нам тут точно нужен ?)
+
     const btnValueDataTarget = e.target.dataset.target.slice(1, Infinity)
     let modal
 
@@ -216,4 +215,10 @@ export function createModal(e) {
          </div>
     </div>
     `
+    const modalBody = document.querySelector(`#${btnValueDataTarget} .modal-body`)
+    return modalBody // Если нам в той функции нужно конкретно поле модал бади, мы можем его тут и возвращать сразу, а там не придется делать вызов и создаать переменную, а просто делаем так:
+    // const modalBody = createModal(event)
+    // modalBody.append(autorizationForm.form)
+    // мне кажется так удобнее)
+    // НО! Если тебе надо будет что бы эта функция возращала что-то другое, мы можем вернуть так как было когда вы пофиксили, или поставить условие, и в засимости от аргумента или еще чего то возвращать то что надо
 }

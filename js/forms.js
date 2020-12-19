@@ -45,6 +45,7 @@ class AutorizationForm {
         const inputLogin = new Input('email', 'form-control', null, 'example@gmail.com')
         const inputPassword = new Input('password', 'form-control', null, 'Пароль')
         const button = new Input('submit', 'btn btn-info', 'Войти')
+        button.setAttribute('data-dismiss', 'modal')
 
         form.append(inputLogin, inputPassword, button)
         return form
@@ -67,7 +68,8 @@ class CreateVisitForm {
         const form = document.createElement('form')
 
         const createButton = new Input('submit', 'btn btn-success', 'Создать')
-        const closeButton = new Input('button', 'btn btn-secondary btn-sm', 'Закрыть')
+        const closeButton = new Input('button', 'btn btn-secondary close-btn', 'Закрыть')
+
         const doctors = new Select('Выберите врача', 'Кардиолог', 'Стоматолог', 'Терапевт')
         doctors.classList += ' doctors-list'
 
@@ -117,6 +119,18 @@ class Form {
     clear(event) {
         if (event) event.preventDefault()
         this.form.reset()
+        const doctorsSelect = document.querySelector('.doctors-list')
+        if (doctorsSelect) doctorsSelect.selectedIndex = 0
+
+        const childrenToHide = document.querySelectorAll(`#${this.form.id} .pop-up`)
+        if (childrenToHide.length !== 0) {
+            for (let child of childrenToHide) {
+                if (child.tagName === 'SELECT') {
+                    child.selectedIndex = 0
+                }
+                child.hidden = true
+            }
+        }
     }
     async submit(event, destination, obj, transformMethod) {
         event.preventDefault()

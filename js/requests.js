@@ -1,38 +1,42 @@
 'use strict'
 import { Form } from './forms.js'
-
+import { createModal } from './cardsFunctions.js'
 const DOMAIN = 'https://ajax.test-danit.com/api/v2/cards'
-const loginBtn = document.querySelector('.btn[data-target="#autorizationModal"]')
-const modal = document.querySelector('.modal-ne-bootstrap')
+
+const loginBtn = document.querySelector('[data-target="#authorizationModal"]')
+const createVisitBtn = document.querySelector('[data-target="#formModal"]')
 const visitForm = new Form('visit', 'create-visit')
 const autorizationForm = new Form('autorization', 'autorization-form')
 
-loginBtn.addEventListener('click', showAutorizationModal)
 document.addEventListener('DOMContentLoaded', checkSession)
+loginBtn.addEventListener('click', showAutorizationModal)
+createVisitBtn.addEventListener('click', showVisitForm)
+visitForm.form.addEventListener('submit', createVisit)
 
 function checkSession() {
     const isAutorizated = localStorage.getItem('autorizated')
     if (isAutorizated) {
-        showVisitForm()
-        changeButtonText(loginBtn, 'Создать визит', 'create visit')
-        loginBtn.removeEventListener('click', showAutorizationModal)
+        loginBtn.hidden = true
+        createVisitBtn.hidden = false
     }
 }
-function changeButtonText(button, text, value) {
-    button.innerText = text
-    button.value = value
-}
 function showAutorizationModal(event) {
-    event.preventDefault()
-    modal.append(autorizationForm.form)
-    loginBtn.removeEventListener('click', showAutorizationModal)
+    const modalBody = createModal(event)
+    modalBody.append(autorizationForm.form)
 
     const submitBtn = document.querySelector('#autorization-form  input[type="submit"]')
     submitBtn.addEventListener('click', (event) => login(event, autorizationForm))
 }
+
 function showVisitForm(event) {
-    if (event) event.preventDefault()
-    modal.append(visitForm.form)
+    const modalBody = createModal(event)
+    modalBody.appendChild(visitForm.form)
+
+    const closeBtn = document.querySelector('#create-visit .close-btn')
+    closeBtn.addEventListener('click', () => {
+        visitForm.clear()
+        $('#formModal').modal('hide') // Комментарий ниже внутри функции createVisit(event)
+    })
 
     const doctors = document.querySelector('.doctors-list')
     doctors.addEventListener('change', showFields)
@@ -68,18 +72,20 @@ function validateVisitForm() {
     if (prioritySelect.value === '* Срочность') {
         const warning = document.querySelector('#warning')
         if (warning) warning.remove() // проверка для того что бы поле "выбрать приоритет" добавлялось только одно
-        visitForm.form.insertAdjacentHTML('beforeend', '<p id="warning" style="color: tomato"> Необходимо выбрать приоритет</p>')
+        visitForm.form.insertAdjacentHTML('beforeend', '<p id="warning" style="color: tomato"> Необходимо выбрать срочность</p>')
         return false
     }
 
     const cardiologistGroup = document.querySelector('.cardiologist-group')
+    let fields
+
     if (cardiologistGroup.hidden) {
-        const fields = document.querySelectorAll('#create-visit .form-control:not(.cardio)')
-        if (!checkFields(fields)) return false
+        fields = document.querySelectorAll('#create-visit .form-control:not(.cardio)')
     } else {
-        const fields = document.querySelectorAll('#create-visit .form-control')
-        if (!checkFields(fields)) return false
+        fields = document.querySelectorAll('#create-visit .form-control')
     }
+
+    if (!checkFields(fields)) return false
 
     function checkFields(fields) {
         for (let field of fields) {
@@ -90,6 +96,7 @@ function validateVisitForm() {
                 return false
             }
         }
+        return true
     }
 
     const checkKeys = {
@@ -106,7 +113,7 @@ function validateVisitForm() {
         isClosed: false,
     }
     for (let key in checkKeys) {
-        if (key === 'isClosed' || key === 'description') continue // trim выдаст ошибку если значением будет boolean.
+        if (key === 'isClosed' || key === 'description') continue
         if (!checkKeys[key].trim()) {
             // удалаю ключи свойства которых равны пустой строке или пробелу.
             delete checkKeys[key]
@@ -127,21 +134,17 @@ async function login(event, form) {
     }
     const getToken = await form.submit(event, `${DOMAIN}/login`, requestObj, 'TEXT')
     if (getToken) {
-        modal.innerHTML = ''
         localStorage.setItem('autorizated', getToken)
-        loginBtn.addEventListener('click', showVisitForm)
-        changeButtonText(loginBtn, 'Создать визит', 'create visit')
+        checkSession()
     } else {
         form.form.insertAdjacentHTML('beforeend', `<p style="color: tomato">Неверный логин или пароль</p>`)
     }
 }
 
-visitForm.form.addEventListener('submit', createVisit)
 async function createVisit(event) {
     event.preventDefault()
 
     const requestBody = validateVisitForm()
-    console.log(requestBody)
     if (!requestBody) return
     const token = localStorage.getItem('autorizated')
     const requestObj = {
@@ -150,10 +153,13 @@ async function createVisit(event) {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ ...requestBody }, null, '\t'),
+        body: JSON.stringify(requestBody, null, '\t'),
     }
     const data = await visitForm.submit(event, DOMAIN, requestObj, 'JSON')
+    console.log(data)
     visitForm.clear()
+
+    $('#formModal').modal('hide') // JQerry! Пришлось скрывать его принудительно, потому что если просто добавить аотрубит data-dismiss="modal" то при сабмите формы ДАННЫЕ НЕ ОТПРАВЛЯЮТСЯ НА СЕРВЕР и функция НЕ срабатывает, модальное окно ПРОСТО ИСЧЕЗАЕТ
 }
 // async function get() {
 //     const response = await fetch('https://ajax.test-danit.com/api/v2/cards', {

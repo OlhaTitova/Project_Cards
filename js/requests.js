@@ -1,6 +1,9 @@
-'use strict'
-import { Form } from './forms.js'
-import { createModal } from './cardsFunctions.js'
+'use strict';
+
+import { Form, showFields } from './FORMS.js'
+import { createModal } from './createModal.js'
+import { createVisit } from './cardsAction.js'
+
 const DOMAIN = 'https://ajax.test-danit.com/api/v2/cards'
 
 const loginBtn = document.querySelector('[data-target="#authorizationModal"]')
@@ -11,7 +14,7 @@ const autorizationForm = new Form('autorization', 'autorization-form')
 document.addEventListener('DOMContentLoaded', checkSession)
 loginBtn.addEventListener('click', showAutorizationModal)
 createVisitBtn.addEventListener('click', showVisitForm)
-visitForm.form.addEventListener('submit', createVisit)
+visitForm.form.addEventListener('submit', showApplication)
 
 function checkSession() {
     const isAutorizated = localStorage.getItem('autorizated')
@@ -24,11 +27,11 @@ function showAutorizationModal(event) {
     const modalBody = createModal(event)
     modalBody.append(autorizationForm.form)
 
-    const submitBtn = document.querySelector('#autorization-form  input[type="submit"]')
+    const submitBtn = document.querySelector('#autorization-form  button[type="submit"]')
     submitBtn.addEventListener('click', (event) => login(event, autorizationForm))
 }
 
-function showVisitForm(event) {
+export function showVisitForm(event) {
     const modalBody = createModal(event)
     modalBody.appendChild(visitForm.form)
 
@@ -39,33 +42,7 @@ function showVisitForm(event) {
     })
 
     const doctors = document.querySelector('.doctors-list')
-    doctors.addEventListener('change', showFields)
-    function showFields() {
-        const commonFields = document.querySelectorAll('#create-visit .common')
-        const cardiologistFields = document.querySelector('#create-visit .cardiologist-group')
-        const lastVisitField = document.querySelector('#create-visit .last-visit')
-        const ageField = document.querySelector('#create-visit .age')
-        const selected = doctors.value
-
-        for (let field of commonFields) {
-            field.hidden = false
-        }
-        if (selected === 'Кардиолог') {
-            cardiologistFields.hidden = false
-            lastVisitField.hidden = true
-            ageField.hidden = false
-        }
-        if (selected === 'Стоматолог') {
-            cardiologistFields.hidden = true
-            lastVisitField.hidden = false
-            ageField.hidden = true
-        }
-        if (selected === 'Терапевт') {
-            cardiologistFields.hidden = true
-            lastVisitField.hidden = true
-            ageField.hidden = false
-        }
-    }
+    doctors.addEventListener('change', () => showFields(document))
 }
 function validateVisitForm() {
     const prioritySelect = document.querySelector('#create-visit .priority')
@@ -141,7 +118,7 @@ async function login(event, form) {
     }
 }
 
-async function createVisit(event) {
+async function showApplication(event) {
     event.preventDefault()
 
     const requestBody = validateVisitForm()
@@ -156,8 +133,9 @@ async function createVisit(event) {
         body: JSON.stringify(requestBody, null, '\t'),
     }
     const data = await visitForm.submit(event, DOMAIN, requestObj, 'JSON')
-    console.log(data)
     visitForm.clear()
+
+    createVisit();
 
     $('#formModal').modal('hide') // JQerry! Пришлось скрывать его принудительно, потому что если просто добавить аотрубит data-dismiss="modal" то при сабмите формы ДАННЫЕ НЕ ОТПРАВЛЯЮТСЯ НА СЕРВЕР и функция НЕ срабатывает, модальное окно ПРОСТО ИСЧЕЗАЕТ
 }

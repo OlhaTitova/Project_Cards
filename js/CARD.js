@@ -1,23 +1,28 @@
+'use strict';
+
 export {
     VisitTherapist,
     VisitCardiologist,
     VisitDentist
 };
 
+import {CARDIOLOGIST, DENTIST, THERAPIST} from './CONSTS.js';
+
 class Visit {
-    constructor(name, doctor, title, description, priority, isClosed) {
+    constructor(id, name, doctor, title, description, priority, isClosed) {
         this.name = name;
         this.doctor = doctor;
         this.title = title;
         this.description = description;
         this.priority = priority;
         this.isClosed = isClosed;
+        this.id = id;
     }
 }
 
 class VisitCardiologist extends Visit {
-    constructor(name, title, description, age, bp, bmi, heartDiseases, priority, isClosed) {
-        super(name, 'Кардиолог', title, description, priority, isClosed);
+    constructor(id, name, title, description, age, bp, bmi, heartDiseases, priority, isClosed) {
+        super(id, name, CARDIOLOGIST, title, description, priority, isClosed);
         this.age = age;
         this.bp = bp;
         this.bmi = bmi;
@@ -34,8 +39,8 @@ class VisitCardiologist extends Visit {
 }
 
 class VisitTherapist extends Visit {
-    constructor(name, title, description, age, priority, isClosed) {
-        super(name, 'Терапевт', title, description, priority, isClosed);
+    constructor(id, name, title, description, age, priority, isClosed) {
+        super(id, name, THERAPIST, title, description, priority, isClosed);
         this.age = age;
     }
 
@@ -45,8 +50,8 @@ class VisitTherapist extends Visit {
 }
 
 class VisitDentist extends Visit {
-    constructor(name, title, description, lastVisit, priority, isClosed) {
-        super(name, 'Стоматолог', title, description, priority, isClosed);
+    constructor(id, name, title, description, lastVisit, priority, isClosed) {
+        super(id, name, DENTIST, title, description, priority, isClosed);
         this.lastVisit = lastVisit;
     }
 

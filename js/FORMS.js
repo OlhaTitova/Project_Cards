@@ -1,5 +1,7 @@
-export { Form }
+'use strict';
+
 import {CARDIOLOGIST, DENTIST, THERAPIST} from './CONSTS.js';
+
 class TextArea {
     constructor(name, rows = 1, classList) {
         const area = document.createElement('textarea')
@@ -137,7 +139,7 @@ export class CreateVisitForm {
     }
 }
 
-class Form {
+export class Form {
     id
     constructor(formType, formID) {
         this.form = this.create(formType)

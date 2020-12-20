@@ -1,6 +1,6 @@
 'use strict';
-import {deleteVisit} from './cardsAction.js'
 
+import {deleteVisit} from './cardsAction.js'
 import {Modal, ModalConfirm} from './MODAL.js';
 
 export function createModal(e) {

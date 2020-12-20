@@ -1,11 +1,5 @@
 'use strict';
 
-export {
-    VisitTherapist,
-    VisitCardiologist,
-    VisitDentist
-};
-
 import {CARDIOLOGIST, DENTIST, THERAPIST} from './CONSTS.js';
 
 class Visit {
@@ -20,7 +14,7 @@ class Visit {
     }
 }
 
-class VisitCardiologist extends Visit {
+export class VisitCardiologist extends Visit {
     constructor(id, name, title, description, age, bp, bmi, heartDiseases, priority, isClosed) {
         super(id, name, CARDIOLOGIST, title, description, priority, isClosed);
         this.age = age;
@@ -38,7 +32,7 @@ class VisitCardiologist extends Visit {
     }
 }
 
-class VisitTherapist extends Visit {
+export class VisitTherapist extends Visit {
     constructor(id, name, title, description, age, priority, isClosed) {
         super(id, name, THERAPIST, title, description, priority, isClosed);
         this.age = age;
@@ -49,7 +43,7 @@ class VisitTherapist extends Visit {
     }
 }
 
-class VisitDentist extends Visit {
+export class VisitDentist extends Visit {
     constructor(id, name, title, description, lastVisit, priority, isClosed) {
         super(id, name, DENTIST, title, description, priority, isClosed);
         this.lastVisit = lastVisit;

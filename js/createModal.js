@@ -38,11 +38,7 @@ export function createModal(e) {
     </div>
     `
     const modalBody = document.querySelector(`#${btnValueDataTarget} .modal-body`)
-    return modalBody // Если нам в той функции нужно конкретно поле модал бади, мы можем его тут и возвращать сразу, а там не придется делать вызов и создаать переменную, а просто делаем так:
-    // const modalBody = createModal(event)
-    // modalBody.append(autorizationForm.form)
-    // мне кажется так удобнее)
-    // НО! Если тебе надо будет что бы эта функция возращала что-то другое, мы можем вернуть так как было когда вы пофиксили, или поставить условие, и в засимости от аргумента или еще чего то возвращать то что надо
+    return modalBody 
 }
 
 

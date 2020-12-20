@@ -1,65 +1,67 @@
-'use strict';
+'use strict'
 
-import {CARDIOLOGIST, DENTIST, THERAPIST} from './CONSTS.js';
+import { CARDIOLOGIST, DENTIST, THERAPIST } from './CONSTS.js'
 
 class TextArea {
-    constructor(name, rows = 1, classList) {
+    constructor(name, rows = 1, classList, value) {
         const area = document.createElement('textarea')
-        area.setAttribute('name', name);
+        area.setAttribute('name', name)
+        area.setAttribute('value', value)
+        area.innerText = value
         area.classList = classList
         area.rows = rows
         return area
     }
 }
 class Input {
-    constructor(name, classes, value, placeholder) {
+    constructor(type, name, classList, value, placeholder) {
         const input = document.createElement('input')
-        input.className = classes
-        input.setAttribute('type', 'text')
-        input.setAttribute('name', name)
+        input.type = type
+        input.className = classList
+
+        if (name) input.name = name
+        if (placeholder) input.placeholder = placeholder
         if (value) input.setAttribute('value', value)
-        if (placeholder) input.setAttribute('placeholder', placeholder)
         return input
     }
 }
-
 class Button extends Input {
-    constructor(type, classes, value, placeholder) {
-        const button = super(type, classes, value, placeholder)
-        button.setAttribute('type', type)
-       
+    constructor(type, name, classList, value, placeholder) {
+        const button = super(type, name, classList, value, placeholder)
+        button.type = type
         return button
     }
 }
 
 class Hidden extends Input {
-    constructor(type, classes, value, placeholder) {
-        const button = super(type, classes, value, placeholder)
+    constructor(type, name, classList, value, placeholder) {
+        const button = super(type, name, classList, value, placeholder)
         button.hidden = true
-       
+
         return button
     }
 }
 
 class Select {
-    constructor(name, placeholder, options, data) {
+    constructor(name, defaultValue, options, data) {
         const select = document.createElement('select')
-        select.setAttribute('name', name);
+        select.setAttribute('name', name)
         select.classList.add('form-control')
 
         const defaultOption = document.createElement('option')
-        defaultOption.innerText = placeholder
+        defaultOption.innerText = defaultValue
         defaultOption.disabled = true
-        defaultOption.setAttribute('selected', true);
+        defaultOption.selected = true
         select.appendChild(defaultOption)
 
         for (let opt of options) {
             const optTag = document.createElement('option')
             optTag.value = opt
-            if(data == optTag.value) {
-                optTag.setAttribute('selected', true);
-            }
             optTag.innerText = opt
+
+            if (data === optTag.value) {
+                optTag.selected = true
+            }
             select.appendChild(optTag)
         }
         return select
@@ -70,9 +72,9 @@ class AutorizationForm {
     constructor() {
         const form = document.createElement('form')
 
-        const inputLogin = new Input('email', 'form-control', null, 'example@gmail.com')
-        const inputPassword = new Input('password', 'form-control', null, 'Пароль')
-        const button = new Button('submit', 'btn btn-info', 'Войти')
+        const inputLogin = new Input('email', null, 'form-control', null, 'example@gmail.com')
+        const inputPassword = new Input('password', null, 'form-control', null, 'Пароль')
+        const button = new Button('submit', null, 'btn btn-primary mt-4', 'Войти')
         button.setAttribute('data-dismiss', 'modal')
 
         form.append(inputLogin, inputPassword, button)
@@ -83,7 +85,7 @@ class FilterForm {
     constructor() {
         const form = document.createElement('form')
 
-        const searchInput = new Input('search', 'form-control', null, 'Поиск по заголовку или содержимому')
+        const searchInput = new Input('search', null, 'form-control', null, 'Поиск по заголовку или содержимому')
         const status = new Select('Визиты', ['Все', 'Открытые', 'Зыкрытые'])
         const priority = new Select('Срочность', 'Нет', ['Обычная', 'Приоритетная', 'Неотложная'])
 
@@ -95,34 +97,44 @@ export class CreateVisitForm {
     constructor(data) {
         const form = document.createElement('form')
 
-        const createButton = new Button('submit', 'btn btn-success send-btn', 'Создать')
-        const closeButton = new Button('button', 'btn btn-secondary close-btn', 'Закрыть')
+        const createButton = new Button('submit', 'button', 'btn btn-primary send-btn mr-2 mt-4', 'Создать')
+        const closeButton = new Button('button', 'button', 'btn btn-secondary close-btn mt-4', 'Закрыть')
 
         const doctors = new Select('doctor', 'Выберите врача', ['Кардиолог', 'Стоматолог', 'Терапевт'], data ? data.doctor : null)
         doctors.classList.add('doctors-list')
 
-        const name = new Input('name', 'form-control common pop-up name', data ? data.name : null, '* ФИО')
-        const age = new Input('age', 'form-control common pop-up age', data ? data.age : null, '* Возвраст')
-        const visitGoal = new Input('title', 'form-control common pop-up visit-goal', data ? data.title : null, '* Цель визита')
+        const name = new Input('text', 'name', 'form-control common pop-up name', data ? data.name : null, '* ФИО')
+        const age = new Input('number', 'age', 'form-control common pop-up age', data ? data.age : null, '* Возраст')
+        const visitGoal = new Input('text', 'title', 'form-control common pop-up visit-goal', data ? data.title : null, '* Цель визита')
 
-        const visitComment = new TextArea('destination', 2, 'form-control common pop-up', data ? data.destination : null)
+        const visitComment = new TextArea('description', 2, 'form-control common pop-up', data ? data.description : null, '')
         visitComment.placeholder = 'Комментарии'
 
         const priority = new Select('priority', '* Срочность', ['Обычная', 'Приоритетная', 'Неотложная'], data ? data.priority : null)
         priority.classList.add('common', 'pop-up', 'priority')
 
-        const pressure = new Input('bp', 'form-control cardio pressure', data ? data.bp : null, '* Обычное давление')
-        const bodyWeight = new Input('bmi', 'form-control cardio body-weight', data ? data.bmi : null, '* Индекс массы тела')
-        const heartDiseases = new Input('heartDiseases', 'form-control cardio diseases', data ? data.heartDiseases : null, '* Болезни сердца')
+        const pressure = new Input('text', 'bp', 'form-control cardio pressure', data ? data.bp : null, '* Обычное давление')
+        const bodyWeight = new Input('text', 'bmi', 'form-control cardio body-weight', data ? data.bmi : null, '* Индекс массы тела')
+        const heartDiseases = new Input('text', 'heartDiseases', 'form-control cardio diseases', data ? data.heartDiseases : null, '* Болезни сердца')
         const cardiologistGroup = document.createElement('div')
         cardiologistGroup.className = 'cardiologist-group pop-up'
         cardiologistGroup.append(pressure, bodyWeight, heartDiseases)
 
-        const lastVisit = new Input('lastVisit', 'form-control last-visit pop-up', data ? data.lastVisit : null, '* Последний визит')
+        const lastVisit = new Input('text', 'lastVisit', 'form-control last-visit pop-up', data ? data.lastVisit : null, '* Последний визит')
 
-        form.appendChild(new Hidden('id', '', data ? data.id : null))
+        const checkBox = document.createElement('div')
+        checkBox.className = 'checkbox-wrapper'
+        checkBox.hidden = true
+        checkBox.innerHTML = `<div class="form-check form-switch">
+                                <input class="form-check-input" id="test" name="isClosed" checked="checked" type="checkbox" value="${data ? data.isClosed : null}">
+                                <label class="form-check-label" for="test">
+                                    <span class="text-secondary">Закрыть визит</span>
+                                </label>
+                            </div>`
 
-        const fields = [doctors, name, visitGoal, age, priority, cardiologistGroup, lastVisit, visitComment, createButton, closeButton]
+        form.appendChild(new Hidden('text', 'id', '', data ? data.id : null))
+
+        const fields = [doctors, name, visitGoal, age, priority, cardiologistGroup, lastVisit, visitComment, checkBox, createButton, closeButton]
 
         for (let field of fields) {
             form.appendChild(field)
@@ -146,7 +158,7 @@ export class Form {
         if (formID) this.id = this.form.id = formID
     }
     create(formType) {
-        let form;
+        let form
         if (formType === 'autorization') form = new AutorizationForm()
         else if (formType === 'filter') form = new FilterForm()
         else if (formType === 'visit') form = new CreateVisitForm()

@@ -1,63 +1,61 @@
-'use strict';
+'use strict'
 
-import { VisitTherapist, VisitCardiologist, VisitDentist } from './CARD.js';
-import { createModal, createModalConfirm } from './createModal.js';
-import {CreateVisitForm} from './FORMS.js';
-import {CARDIOLOGIST, DENTIST, THERAPIST} from './CONSTS.js';
-
+import { VisitTherapist, VisitCardiologist, VisitDentist } from './CARD.js'
+import { createModal, createModalConfirm } from './createModal.js'
+import { CreateVisitForm } from './FORMS.js'
+import { CARDIOLOGIST, DENTIST, THERAPIST } from './CONSTS.js'
 
 const DOMAIN = 'https://ajax.test-danit.com/api/v2/cards/'
+// const token = checkSession()
 const token = 'd6fcc7cd-ddeb-40b8-9cde-465a6f4c5ea3'
+console.log(token)
 
-async function getItems() {
+export async function getItems() {
+    console.log(token)
     const response = await fetch(`${DOMAIN}`, {
         method: 'GET',
         headers: {
             Authorization: `Bearer ${token}`,
         },
     })
-
     const items = await response.json()
+
+    const noItemsMsg = document.querySelector('#no-items')
+    items.length === 0 ? (noItemsMsg.hidden = false) : (noItemsMsg.hidden = true)
+
     return items
 }
-
 export async function createVisit() {
-    let allItems = await getItems();
+    let allItems = await getItems()
 
-    console.log(allItems);
-    const itemsRow = document.querySelector('#items-row');
-    itemsRow.innerHTML = '';
+    const itemsRow = document.querySelector('#items-row')
+    itemsRow.innerHTML = ''
 
     allItems.forEach((item) => {
-        if (item.isClosed) {
-            item.isClosed = 'закрыт'
-        } else {
-            item.isClosed = 'открыт'
-        }
-            
         const col = document.createElement('div')
-        col.classList.add('col', 'mb-4');
-        col.setAttribute('id',`${item.id}`);
+        col.classList.add('col', 'mb-4')
+        col.setAttribute('id', `${item.id}`)
         col.innerHTML = renderCard(chooseVisitForm(item))
-
-        col.querySelector('.btn-show-more').addEventListener('click', showMore)
-        col.querySelector('.btn-delete-card').addEventListener('click', createModalConfirm)
-        col.querySelector('.change-card').addEventListener('click', changeVisit)
+        setEditBtnCardListeners(col)
 
         itemsRow.appendChild(col)
     })
 }
-
+function checkVIsitStatus(item) {
+    let res
+    item.isClosed ? (res = 'закрыт') : (res = 'открыт')
+    return res
+}
 function chooseVisitForm(item) {
     switch (item.doctor) {
         case THERAPIST:
-            return new VisitTherapist(item.id, item.name, item.title, item.description, item.age, item.priority, item.isClosed);
+            return new VisitTherapist(item.id, item.name, item.title, item.description, item.age, item.priority, checkVIsitStatus(item))
         case CARDIOLOGIST:
-           return new VisitCardiologist(item.id, item.name, item.title, item.description, item.age, item.bp, item.bmi, item.heartDiseases, item.priority, item.isClosed);
+            return new VisitCardiologist(item.id, item.name, item.title, item.description, item.age, item.bp, item.bmi, item.heartDiseases, item.priority, checkVIsitStatus(item))
         case DENTIST:
-            return new VisitDentist(item.id, item.name, item.title, item.description, item.lastVisit, item.priority, item.isClosed);
+            return new VisitDentist(item.id, item.name, item.title, item.description, item.lastVisit, item.priority, checkVIsitStatus(item))
         default:
-            throw new Error('Undefined visit type');
+            throw new Error('Undefined visit type')
     }
 }
 
@@ -73,13 +71,6 @@ function renderCard(visit) {
                 <p class="card-text"><span class="text-secondary">Состояние визита:</span> ${visit.isClosed}</p>
                 ${visit.renderVisit()}
                 <p class="card-text"><span class="text-secondary">Описание визита:</span> ${visit.description}</p>
-                
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="isClosed">
-                    <label class="form-check-label" for="isClosed">
-                        <span class="text-secondary">Закрыть визит</span>
-                    </label>
-                </div>
             </div>
         
             <button type="button" class="btn btn-info mb-3 btn-show-more">Показать больше</button>
@@ -100,55 +91,67 @@ function renderCard(visit) {
 }
 
 async function changeVisit(e) {
-
-    const cardId = e.target.dataset.id;
+    const cardId = e.target.dataset.id
 
     const response = await fetch(`${DOMAIN}${cardId}`, {
         method: 'GET',
         headers: {
-            'Authorization': `Bearer ${token}`,
-        }
-    });
+            Authorization: `Bearer ${token}`,
+        },
+    })
 
-    let item = await response.json();
+    let item = await response.json()
+    console.log(item)
+    $(document).ready(function () {
+        $(`#${e.target.dataset.target.slice(1, Infinity)}`).modal('show')
+    })
+    const visitForm = new CreateVisitForm(item)
+    const checkWrapper = visitForm.querySelector('.checkbox-wrapper')
+    const checkBox = checkWrapper.querySelector('input[type="checkbox"]')
+    checkWrapper.hidden = false
+    checkBox.checked = item.isClosed
+    console.log(visitForm)
 
-    $(document).ready(function() {
-        $(`#${e.target.dataset.target.slice(1, Infinity)}`).modal('show');
-      });
-    
-    const visitForm = new CreateVisitForm(item);   
     const modalBody = createModal(e)
     modalBody.appendChild(visitForm)
 
-    const closeBtn = visitForm.querySelector('.close-btn');
+    const closeBtn = visitForm.querySelector('.close-btn')
     closeBtn.addEventListener('click', closeChangeVisitForm)
 
     visitForm.addEventListener('submit', sendPUTRequest)
 }
 
-
-async function sendPUTRequest (e) {
+async function sendPUTRequest(e) {
     e.preventDefault()
-   
-    let reqBody = {};
-    $(e.target).serializeArray().forEach(element => {
-        reqBody[element.name] = element.value
-    });
-    
-    const res = await fetch(`${DOMAIN}${reqBody.id}`,
-        {
-            method: 'PUT',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-            },
-            body: JSON.stringify(reqBody)
-        });
+    let reqBody = {}
+    $(e.target)
+        .serializeArray()
+        .forEach((element) => {
+            reqBody[element.name] = element.value
+        })
 
-        if(res.status === 200) {
-            closeChangeVisitForm()
-            let target = document.getElementById(reqBody.id);
-            target.innerHTML = renderCard(chooseVisitForm(reqBody))
-        }
+    const checkBox = e.target.querySelector('input[type="checkbox"]')
+    reqBody.isClosed = checkBox.checked
+
+    const res = await fetch(`${DOMAIN}${reqBody.id}`, {
+        method: 'PUT',
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(reqBody),
+    })
+    if (res.status === 200) {
+        closeChangeVisitForm()
+        const target = document.getElementById(reqBody.id)
+        target.innerHTML = renderCard(chooseVisitForm(reqBody))
+        setEditBtnCardListeners(target)
+    }
+}
+
+function setEditBtnCardListeners(parentEl) {
+    parentEl.querySelector('.btn-show-more').addEventListener('click', showMore)
+    parentEl.querySelector('.btn-delete-card').addEventListener('click', createModalConfirm)
+    parentEl.querySelector('.change-card').addEventListener('click', changeVisit)
 }
 
 function closeChangeVisitForm() {
@@ -168,6 +171,7 @@ export async function deleteVisit(event) {
 
     if (res.status === 200) {
         document.body.querySelector(`[id="${event.target.dataset.id}"]`).remove()
+        getItems()
     }
 }
 

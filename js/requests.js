@@ -1,33 +1,23 @@
-'use strict';
+'use strict'
 
 import { Form, showFields } from './FORMS.js'
 import { createModal } from './createModal.js'
-import { createVisit } from './cardsAction.js'
-
+import { createVisit, getItems } from './cardsAction.js'
+import { checkSession, createVisitBtn, loginBtn } from './main.js'
 const DOMAIN = 'https://ajax.test-danit.com/api/v2/cards'
 
-const loginBtn = document.querySelector('[data-target="#authorizationModal"]')
-const createVisitBtn = document.querySelector('[data-target="#formModal"]')
-const visitForm = new Form('visit', 'create-visit')
 const autorizationForm = new Form('autorization', 'autorization-form')
+const visitForm = new Form('visit', 'create-visit')
 
-document.addEventListener('DOMContentLoaded', checkSession)
 loginBtn.addEventListener('click', showAutorizationModal)
 createVisitBtn.addEventListener('click', showVisitForm)
-visitForm.form.addEventListener('submit', showApplication)
+visitForm.form.addEventListener('submit', fillForm)
 
-function checkSession() {
-    const isAutorizated = localStorage.getItem('autorizated')
-    if (isAutorizated) {
-        loginBtn.hidden = true
-        createVisitBtn.hidden = false
-    }
-}
 function showAutorizationModal(event) {
     const modalBody = createModal(event)
     modalBody.append(autorizationForm.form)
 
-    const submitBtn = document.querySelector('#autorization-form  button[type="submit"]')
+    const submitBtn = document.querySelector('#autorization-form  input[type="submit"]')
     submitBtn.addEventListener('click', (event) => login(event, autorizationForm))
 }
 
@@ -38,11 +28,12 @@ export function showVisitForm(event) {
     const closeBtn = document.querySelector('#create-visit .close-btn')
     closeBtn.addEventListener('click', () => {
         visitForm.clear()
-        $('#formModal').modal('hide') // Комментарий ниже внутри функции createVisit(event)
+        $('#formModal').modal('hide')
     })
 
     const doctors = document.querySelector('.doctors-list')
     doctors.addEventListener('change', () => showFields(document))
+    doctors.addEventListener('change', () => showFields(visitForm.form))
 }
 function validateVisitForm() {
     const prioritySelect = document.querySelector('#create-visit .priority')
@@ -66,6 +57,7 @@ function validateVisitForm() {
 
     function checkFields(fields) {
         for (let field of fields) {
+            if (field.tagName === 'CHECKBOX') continue
             if (!field.hidden && field.value.trim() !== '') continue
             //  проверка пройдена ^
             else if (!field.hidden && field.tagName !== 'TEXTAREA') {
@@ -113,17 +105,19 @@ async function login(event, form) {
     if (getToken) {
         localStorage.setItem('autorizated', getToken)
         checkSession()
+        // createVisit()
     } else {
         form.form.insertAdjacentHTML('beforeend', `<p style="color: tomato">Неверный логин или пароль</p>`)
     }
 }
 
-async function showApplication(event) {
+async function fillForm(event) {
     event.preventDefault()
 
     const requestBody = validateVisitForm()
     if (!requestBody) return
-    const token = localStorage.getItem('autorizated')
+    // const token = localStorage.getItem('autorizated')
+    const token = checkSession()
     const requestObj = {
         method: 'POST',
         headers: {
@@ -132,12 +126,13 @@ async function showApplication(event) {
         },
         body: JSON.stringify(requestBody, null, '\t'),
     }
+    console.log(requestObj.body)
     const data = await visitForm.submit(event, DOMAIN, requestObj, 'JSON')
+    console.log(data)
     visitForm.clear()
-
-    createVisit();
-
-    $('#formModal').modal('hide') // JQerry! Пришлось скрывать его принудительно, потому что если просто добавить аотрубит data-dismiss="modal" то при сабмите формы ДАННЫЕ НЕ ОТПРАВЛЯЮТСЯ НА СЕРВЕР и функция НЕ срабатывает, модальное окно ПРОСТО ИСЧЕЗАЕТ
+    createVisit()
+    getItems()
+    $('#formModal').modal('hide')
 }
 // async function get() {
 //     const response = await fetch('https://ajax.test-danit.com/api/v2/cards', {

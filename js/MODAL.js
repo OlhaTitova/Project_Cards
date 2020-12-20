@@ -5,7 +5,6 @@ export class Modal {
     constructor(modalId, titleModal) {
         this.modalId = modalId
         this.titleModal = titleModal
-        // this.contentNode = contentNode
     }
 }
 

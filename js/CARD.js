@@ -31,7 +31,7 @@ export class VisitCardiologist extends Visit {
             </p>
             <p class="card-text">
                 <span class="text-secondary">Обычное давление:</span>
-                </span class="visitor--pressure">${this.bp}</span>
+                <span class="visitor--pressure">${this.bp}</span>
             </p>
             <p class="card-text">
                 <span class="text-secondary">Индекс массы тела:</span>

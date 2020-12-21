@@ -68,7 +68,7 @@ function renderCard(visit) {
                     <span class="visitor--visit-goal">${visit.title}</span>
                 </p>
                 <p class="card-text">
-                    <span class="text-secondary">Срочность:</span>
+                    <span class="text-secondary">Приоритетность:</span>
                     <span class="visitor--priority">${visit.priority}</span>
                 </p>
                 <p class="card-text">
@@ -77,7 +77,7 @@ function renderCard(visit) {
                 </p>
                 ${visit.renderVisit()}
                 <p class="card-text">
-                    <span class="text-secondary">Описание визита:</span>
+                    <span class="text-secondary">Описание визита:</span> 
                     <span class="visitor--description">${visit.description}</span>
                 </p>
             </div>

@@ -16,18 +16,37 @@ async function showFilteredCards(event) {
     // deleteItem('#filter-check')
 
     const cards = document.querySelectorAll('.col.mb-4')
+    for (let card of cards) {
+        if (searchInputValue === '') {
+            card.classList.remove('display-none')
+            continue
+        }
 
-    const visitorName = document.querySelectorAll('.card-title')
-    const visitorGoal = document.querySelectorAll('.visitor--visit-goal')
-    const visitorPressure = document.querySelectorAll('.visitor--pressure')
-    const visitorAge = document.querySelectorAll('.visitor--age')
-    const visitorBMI = document.querySelectorAll('.visitor--bmi')
-    const visitorDiseases = document.querySelectorAll('.visitor--heart-diseases')
-    const visitorLastVisit = document.querySelectorAll('visitor--last-visit')
+        const temp = [
+            findElem(card, '.card-title'),
+            findElem(card, '.visitor--visit-goal'),
+            findElem(card, '.visitor--pressure'),
+            findElem(card, '.visitor--age'),
+            findElem(card, '.visitor--bmi'),
+            findElem(card, '.visitor--heart-diseases'),
+            findElem(card, '.visitor--last-visit'),
+        ]
+        let str = ''
+
+        for (let item of temp) {
+            if (item.textContent) str += item.textContent
+        }
+        if (!str.includes(searchInputValue)) card.classList.add('display-none')
+        else if (card.classList.contains('display-none')) card.classList.remove('display-none')
+    }
+
     const visitorPriority = document.querySelectorAll('.visitor--priority')
     const visitiorStatus = document.querySelectorAll('.visitor--status')
-
-    const textFields = [...visitorName, ...visitorGoal, ...visitorPressure, ...visitorAge, ...visitorBMI, ...visitorDiseases, ...visitorLastVisit]
+}
+function findElem(parentEl, selctor) {
+    const element = parentEl.querySelector(selctor)
+    if (element) return element
+    else return ''
 }
 // function showWarning(parentEl, string, selector, boolean) {
 //     const pereviousWarning = document.querySelector(selector)

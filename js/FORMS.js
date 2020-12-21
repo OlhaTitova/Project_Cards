@@ -87,7 +87,6 @@ class FilterForm {
 
         const searchInput = new Input('search', null, 'form-control', null, 'Поиск по заголовку или содержимому')
         searchInput.setAttribute('minlength', 3)
-        searchInput.setAttribute('required', '')
 
         const submit = new Input('submit', null, 'form-control', 'Поиск', null)
         const status = new Select('status', 'Статус', ['Все', 'Открытые', 'Зыкрытые'])

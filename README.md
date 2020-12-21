@@ -2,8 +2,10 @@
 
 **DEMO:** https://olhatitova.github.io/Project_Cards/.
 
-email: example@gmail.com 
-password: password 
+email: example@gmail.com
+
+password: password
+
 Token: d6fcc7cd-ddeb-40b8-9cde-465a6f4c5ea3 
 
 Project participants:

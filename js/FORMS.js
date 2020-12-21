@@ -89,8 +89,8 @@ class FilterForm {
         searchInput.setAttribute('minlength', 3)
 
         const submit = new Input('submit', null, 'form-control', 'Поиск', null)
-        const status = new Select('status', 'Статус', ['Все', 'Открытые', 'Зыкрытые'])
-        const priority = new Select('priority', 'Срочность', ['Обычная', 'Приоритетная', 'Неотложная'])
+        const status = new Select('status', 'Статус визита', ['Все', 'Открыт', 'Закрыт'])
+        const priority = new Select('priority', 'Срочность', ['Любая', 'Обычная', 'Приоритетная', 'Неотложная'])
 
         form.append(searchInput, status, priority, submit)
         return form

@@ -8,10 +8,10 @@ import { CARDIOLOGIST, DENTIST, THERAPIST } from './CONSTS.js'
 const DOMAIN = 'https://ajax.test-danit.com/api/v2/cards/'
 // const token = checkSession()
 const token = 'd6fcc7cd-ddeb-40b8-9cde-465a6f4c5ea3'
-console.log(token)
+// console.log(token)
 
 export async function getItems() {
-    console.log(token)
+    // console.log(token)
     const response = await fetch(`${DOMAIN}`, {
         method: 'GET',
         headers: {
@@ -25,23 +25,71 @@ export async function getItems() {
 
     return items
 }
+
+const itemsRow = document.querySelector('#items-row')
+
 export async function createVisit() {
     let allItems = await getItems()
-
-    const itemsRow = document.querySelector('#items-row')
+    
     itemsRow.innerHTML = ''
-
+    
     allItems.forEach((item) => {
-        const col = document.createElement('div')
-        col.classList.add('col', 'mb-4')
-        col.setAttribute('id', `${item.id}`)
-        col.innerHTML = renderCard(chooseVisitForm(item))
-        setEditBtnCardListeners(col)
-
-        itemsRow.appendChild(col)
+        const cell = document.createElement('div')
+        cell.classList.add('col', 'mb-4')
+        cell.setAttribute('id', `${item.id}`)
+        cell.innerHTML = renderCard(chooseVisitForm(item))
+        setListenersOnBtnCard(cell)
+        itemsRow.appendChild(cell)
     })
+    DragDrop()
 }
-function checkVIsitStatus(item) {
+ 
+
+function DragDrop() {
+
+    const cells = itemsRow.querySelectorAll('.col.mb-4');
+
+    for(const el of cells) {
+        el.draggable = true;
+    }
+
+    itemsRow.addEventListener('dragstart', (e) => {e.target.closest('.col.mb-4').classList.add('drop-selected')})
+    itemsRow.addEventListener('dragend', (e) => {e.target.closest('.col.mb-4').classList.remove('drop-selected')})
+    itemsRow.addEventListener('dragover', (e) => {
+        e.preventDefault()
+
+        const activeElement = itemsRow.querySelector('.drop-selected')
+        const currentElement = e.target.closest('.col.mb-4')
+        const isMoveable = activeElement !== currentElement ;
+
+        if(!currentElement) return;
+        if(!isMoveable) return;
+        
+        const nextElement = getNextElement(e.clientY, currentElement);
+
+        if(
+            nextElement && 
+            activeElement === nextElement.previousElementSibling ||
+            activeElement === nextElement
+        ) {
+            return;
+        }
+
+        itemsRow.insertBefore(activeElement, nextElement);
+        })
+
+        const getNextElement = (cursorPosition, currentElement) => {
+        const currentElementCoord = currentElement.getBoundingClientRect();
+        const currentElementCenter = currentElementCoord.y + currentElementCoord.height / 2;
+        const nextElement = (cursorPosition < currentElementCenter) ? 
+            currentElement :
+            currentElement.nextElementSibling;
+
+        return nextElement;
+    }
+}
+  
+function checkVisitStatus(item) {
     let res
     item.isClosed ? (res = 'закрыт') : (res = 'открыт')
     return res
@@ -49,11 +97,11 @@ function checkVIsitStatus(item) {
 function chooseVisitForm(item) {
     switch (item.doctor) {
         case THERAPIST:
-            return new VisitTherapist(item.id, item.name, item.title, item.description, item.age, item.priority, checkVIsitStatus(item))
+            return new VisitTherapist(item.id, item.name, item.title, item.description, item.age, item.priority, checkVisitStatus(item))
         case CARDIOLOGIST:
-            return new VisitCardiologist(item.id, item.name, item.title, item.description, item.age, item.bp, item.bmi, item.heartDiseases, item.priority, checkVIsitStatus(item))
+            return new VisitCardiologist(item.id, item.name, item.title, item.description, item.age, item.bp, item.bmi, item.heartDiseases, item.priority, checkVisitStatus(item))
         case DENTIST:
-            return new VisitDentist(item.id, item.name, item.title, item.description, item.lastVisit, item.priority, checkVIsitStatus(item))
+            return new VisitDentist(item.id, item.name, item.title, item.description, item.lastVisit, item.priority, checkVisitStatus(item))
         default:
             throw new Error('Undefined visit type')
     }
@@ -101,7 +149,7 @@ async function changeVisit(e) {
     })
 
     let item = await response.json()
-    console.log(item)
+    // console.log(item)
     $(document).ready(function () {
         $(`#${e.target.dataset.target.slice(1, Infinity)}`).modal('show')
     })
@@ -110,7 +158,7 @@ async function changeVisit(e) {
     const checkBox = checkWrapper.querySelector('input[type="checkbox"]')
     checkWrapper.hidden = false
     checkBox.checked = item.isClosed
-    console.log(visitForm)
+    // console.log(visitForm)
 
     const modalBody = createModal(e)
     modalBody.appendChild(visitForm)
@@ -148,7 +196,7 @@ async function sendPUTRequest(e) {
     }
 }
 
-function setEditBtnCardListeners(parentEl) {
+function setListenersOnBtnCard(parentEl) {
     parentEl.querySelector('.btn-show-more').addEventListener('click', showMore)
     parentEl.querySelector('.btn-delete-card').addEventListener('click', createModalConfirm)
     parentEl.querySelector('.change-card').addEventListener('click', changeVisit)

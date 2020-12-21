@@ -100,7 +100,7 @@ export class CreateVisitForm {
     constructor(data) {
         const form = document.createElement('form')
 
-        const createButton = new Button('submit', 'button', 'btn btn-primary send-btn mr-2 mt-4', 'Создать')
+        const createButton = new Button('submit', 'button', 'btn btn-primary send-btn mr-2 mt-4', 'Сохранить')
         const closeButton = new Button('button', 'button', 'btn btn-secondary close-btn mt-4', 'Закрыть')
 
         const doctors = new Select('doctor', 'Выберите врача', ['Кардиолог', 'Стоматолог', 'Терапевт'], data ? data.doctor : null)

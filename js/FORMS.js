@@ -86,10 +86,14 @@ class FilterForm {
         const form = document.createElement('form')
 
         const searchInput = new Input('search', null, 'form-control', null, 'Поиск по заголовку или содержимому')
-        const status = new Select('Визиты', ['Все', 'Открытые', 'Зыкрытые'])
-        const priority = new Select('Срочность', 'Нет', ['Обычная', 'Приоритетная', 'Неотложная'])
+        searchInput.setAttribute('minlength', 3)
+        searchInput.setAttribute('required', '')
 
-        form.append(searchInput, status, priority)
+        const submit = new Input('submit', null, 'form-control', 'Поиск', null)
+        const status = new Select('status', 'Статус', ['Все', 'Открытые', 'Зыкрытые'])
+        const priority = new Select('priority', 'Срочность', ['Обычная', 'Приоритетная', 'Неотложная'])
+
+        form.append(searchInput, status, priority, submit)
         return form
     }
 }

@@ -22,3 +22,6 @@ form :nth-child(even) {
 .warning {
     color: tomato;
 }
+.display-none {
+    display: none;
+}

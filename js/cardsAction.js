@@ -1,14 +1,13 @@
 'use strict'
+export { getItems, createVisit, chooseVisitForm, renderCard, createModal, createModalConfirm }
 
+import { Modal, ModalConfirm } from './MODAL.js'
 import { VisitTherapist, VisitCardiologist, VisitDentist } from './CARD.js'
-import { createModal, createModalConfirm } from './createModal.js'
 import { CreateVisitForm } from './FORMS.js'
-import { CARDIOLOGIST, DENTIST, THERAPIST } from './CONSTS.js'
-export { getItems, createVisit, chooseVisitForm, renderCard }
-const DOMAIN = 'https://ajax.test-danit.com/api/v2/cards/'
-const token = 'd6fcc7cd-ddeb-40b8-9cde-465a6f4c5ea3'
+import { CARDIOLOGIST, DENTIST, THERAPIST, DOMAIN } from './CONSTS.js'
 
 async function getItems() {
+    const token = localStorage.getItem('autorizated')
     const response = await fetch(`${DOMAIN}`, {
         method: 'GET',
         headers: {
@@ -22,13 +21,13 @@ async function getItems() {
 
     return items
 }
- const itemsRow = document.querySelector('#items-row')
+const itemsRow = document.querySelector('#items-row')
 
 async function createVisit() {
     let allItems = await getItems()
-    
+
     itemsRow.innerHTML = ''
-    
+
     allItems.forEach((item) => {
         const cell = document.createElement('div')
         cell.classList.add('col', 'mb-4')
@@ -39,52 +38,48 @@ async function createVisit() {
     })
     DragDrop()
 }
- 
 
 function DragDrop() {
+    const cells = itemsRow.querySelectorAll('.col.mb-4')
 
-    const cells = itemsRow.querySelectorAll('.col.mb-4');
-
-    for(const el of cells) {
-        el.draggable = true;
+    for (const el of cells) {
+        el.draggable = true
     }
 
-    itemsRow.addEventListener('dragstart', (e) => {e.target.closest('.col.mb-4').classList.add('drop-selected')})
-    itemsRow.addEventListener('dragend', (e) => {e.target.closest('.col.mb-4').classList.remove('drop-selected')})
+    itemsRow.addEventListener('dragstart', (e) => {
+        e.target.closest('.col.mb-4').classList.add('drop-selected')
+    })
+    itemsRow.addEventListener('dragend', (e) => {
+        e.target.closest('.col.mb-4').classList.remove('drop-selected')
+    })
     itemsRow.addEventListener('dragover', (e) => {
         e.preventDefault()
 
         const activeElement = itemsRow.querySelector('.drop-selected')
         const currentElement = e.target.closest('.col.mb-4')
-        const isMoveable = activeElement !== currentElement ;
+        const isMoveable = activeElement !== currentElement
 
-        if(!currentElement) return;
-        if(!isMoveable) return;
-        
-        const nextElement = getNextElement(e.clientY, currentElement);
+        if (!currentElement) return
+        if (!isMoveable) return
 
-        if(
-            nextElement && 
-            activeElement === nextElement.previousElementSibling ||
-            activeElement === nextElement
-        ) {
-            return;
+        const nextElement = getNextElement(e.clientY, currentElement)
+
+        if ((nextElement && activeElement === nextElement.previousElementSibling) || activeElement === nextElement) {
+            return
         }
 
-        itemsRow.insertBefore(activeElement, nextElement);
-        })
+        itemsRow.insertBefore(activeElement, nextElement)
+    })
 
-        const getNextElement = (cursorPosition, currentElement) => {
-        const currentElementCoord = currentElement.getBoundingClientRect();
-        const currentElementCenter = currentElementCoord.y + currentElementCoord.height / 2;
-        const nextElement = (cursorPosition < currentElementCenter) ? 
-            currentElement :
-            currentElement.nextElementSibling;
+    const getNextElement = (cursorPosition, currentElement) => {
+        const currentElementCoord = currentElement.getBoundingClientRect()
+        const currentElementCenter = currentElementCoord.y + currentElementCoord.height / 2
+        const nextElement = cursorPosition < currentElementCenter ? currentElement : currentElement.nextElementSibling
 
-        return nextElement;
+        return nextElement
     }
 }
-  
+
 function checkVisitStatus(item) {
     let res
     item.isClosed ? (res = 'закрыт') : (res = 'открыт')
@@ -147,8 +142,8 @@ function renderCard(visit) {
 }
 
 async function changeVisit(e) {
+    const token = localStorage.getItem('autorizated')
     const cardId = e.target.dataset.id
-
     const response = await fetch(`${DOMAIN}${cardId}`, {
         method: 'GET',
         headers: {
@@ -157,7 +152,6 @@ async function changeVisit(e) {
     })
 
     let item = await response.json()
-    // console.log(item)
     $(document).ready(function () {
         $(`#${e.target.dataset.target.slice(1, Infinity)}`).modal('show')
     })
@@ -166,7 +160,6 @@ async function changeVisit(e) {
     const checkBox = checkWrapper.querySelector('input[type="checkbox"]')
     checkWrapper.hidden = false
     checkBox.checked = item.isClosed
-    // console.log(visitForm)
 
     const modalBody = createModal(e)
     modalBody.appendChild(visitForm)
@@ -179,7 +172,8 @@ async function changeVisit(e) {
 
 async function sendPUTRequest(e) {
     e.preventDefault()
-    let reqBody = {}
+    const token = localStorage.getItem('autorizated')
+    const reqBody = {}
     $(e.target)
         .serializeArray()
         .forEach((element) => {
@@ -199,10 +193,8 @@ async function sendPUTRequest(e) {
     if (res.status === 200) {
         closeChangeVisitForm()
         const target = document.getElementById(reqBody.id)
-        console.log(target)
-        console.log(reqBody)
         target.innerHTML = renderCard(chooseVisitForm(reqBody))
-        setEditBtnCardListeners(target)
+        setListenersOnBtnCard(target)
     }
 }
 
@@ -216,9 +208,10 @@ function closeChangeVisitForm() {
     $('#formModal').modal('hide')
 }
 
-export async function deleteVisit(event) {
+async function deleteVisit(event) {
     event.preventDefault()
-    let cardId = event.target.dataset.id
+    const token = localStorage.getItem('autorizated')
+    const cardId = event.target.dataset.id
 
     const res = await fetch(`${DOMAIN}${cardId}`, {
         method: 'DELETE',
@@ -242,4 +235,65 @@ function showMore(e) {
         blockShowMore.hidden = true
         e.target.textContent = 'Показать больше'
     }
+}
+function createModal(e) {
+    const btnValueDataTarget = e.target.dataset.target.slice(1, Infinity)
+    let modal
+
+    switch (btnValueDataTarget) {
+        case 'formModal':
+            modal = new Modal('formModal', 'Анкета')
+            break
+
+        case 'authorizationModal':
+            modal = new Modal('authorizationModal', 'Авторизация')
+            break
+    }
+
+    const wrapModal = document.querySelector('#wrap-modal')
+    wrapModal.innerHTML = `
+    <div class="modal fade" id="${modal.modalId}" tabindex="-1" role="dialog">
+         <div class="modal-dialog">
+           <div class="modal-content">
+             <div class="modal-header">
+               <h5 class="modal-title" id="exampleModalLabel">${modal.titleModal}</h5>
+               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                 <span aria-hidden="true">&times;</span>
+               </button>
+             </div>
+             <div class="modal-body">
+                <input id="visitId" type="text" hidden>
+             </div>
+           </div>
+         </div>
+    </div>
+    `
+    const modalBody = document.querySelector(`#${btnValueDataTarget} .modal-body`)
+    return modalBody
+}
+function createModalConfirm(event) {
+    const modalConfirm = new ModalConfirm('confirmModal', 'Удаление', 'Да, удалить визит', event.target.dataset.id)
+    const wrapModalConfirm = document.querySelector('#wrap-modal')
+    wrapModalConfirm.innerHTML = `
+    <div class="modal fade" id="${modalConfirm.modalId}" tabindex="-1" role="dialog">
+         <div class="modal-dialog">
+           <div class="modal-content">
+             <div class="modal-header">
+               <h5 class="modal-title" id="exampleModalLabel">${modalConfirm.titleModal}</h5>
+               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                 <span aria-hidden="true">&times;</span>
+               </button>
+             </div>
+             <div class="modal-body">
+                <input id="visitId" type="text" hidden>
+                ${modalConfirm.contentNode}
+             </div>
+                ${modalConfirm.contentFooter}
+           </div>
+         </div>
+    </div>
+    `
+    const modal = document.querySelector('#confirmModal')
+    const btnConfirm = modal.querySelector('[data-id]')
+    btnConfirm.addEventListener('click', deleteVisit)
 }

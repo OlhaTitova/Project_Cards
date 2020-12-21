@@ -23,3 +23,8 @@ form :nth-child(even) {
 .drop-selected {
     opacity: 0.3;
 }
+#filter-submit-btn {
+    max-width: 200px;
+    margin-left: 50%;
+    transform: translateX(-50%);
+}

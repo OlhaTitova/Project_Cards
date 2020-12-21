@@ -1,4 +1,5 @@
 import { Form } from './FORMS.js'
+export { deleteItem }
 const filterForm = new Form('filter', 'filter-form')
 const filterWrapper = document.querySelector('#filter-wrapper')
 

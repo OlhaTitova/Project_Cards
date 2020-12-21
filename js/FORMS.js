@@ -1,7 +1,6 @@
 'use strict'
-
-import { CARDIOLOGIST, DENTIST, THERAPIST } from './CONSTS.js'
-
+export { CreateVisitForm, Form }
+import { showFields } from './requests.js'
 class TextArea {
     constructor(name, rows = 1, classList, value) {
         const area = document.createElement('textarea')
@@ -88,7 +87,9 @@ class FilterForm {
         const searchInput = new Input('search', null, 'form-control', null, 'Поиск по заголовку или содержимому')
         searchInput.setAttribute('minlength', 3)
 
-        const submit = new Input('submit', null, 'form-control', 'Поиск', null)
+        const submit = new Input('submit', null, 'form-control btn-lg btn-info', 'Поиск', null)
+        submit.setAttribute('id', 'filter-submit-btn')
+
         const status = new Select('status', 'Статус визита', ['Все', 'Открыт', 'Закрыт'])
         const priority = new Select('priority', 'Срочность', ['Любая', 'Обычная', 'Приоритетная', 'Неотложная'])
 
@@ -96,7 +97,7 @@ class FilterForm {
         return form
     }
 }
-export class CreateVisitForm {
+class CreateVisitForm {
     constructor(data) {
         const form = document.createElement('form')
 
@@ -154,7 +155,7 @@ export class CreateVisitForm {
     }
 }
 
-export class Form {
+class Form {
     id
     constructor(formType, formID) {
         this.form = this.create(formType)
@@ -191,33 +192,5 @@ export class Form {
             if (transformMethod === 'JSON') return await response.json()
             if (transformMethod === 'TEXT') return await response.text()
         } else return false
-    }
-}
-
-export function showFields(form) {
-    const doctors = form.querySelector('.doctors-list')
-    const commonFields = form.querySelectorAll('.common')
-    const cardiologistFields = form.querySelector('.cardiologist-group')
-    const lastVisitField = form.querySelector('.last-visit')
-    const ageField = form.querySelector('.age')
-    const selected = doctors.value
-
-    for (let field of commonFields) {
-        field.hidden = false
-    }
-    if (selected === CARDIOLOGIST) {
-        cardiologistFields.hidden = false
-        lastVisitField.hidden = true
-        ageField.hidden = false
-    }
-    if (selected === DENTIST) {
-        cardiologistFields.hidden = true
-        lastVisitField.hidden = false
-        ageField.hidden = true
-    }
-    if (selected === THERAPIST) {
-        cardiologistFields.hidden = true
-        lastVisitField.hidden = true
-        ageField.hidden = false
     }
 }

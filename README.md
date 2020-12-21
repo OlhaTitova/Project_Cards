@@ -10,7 +10,7 @@ Token: **d6fcc7cd-ddeb-40b8-9cde-465a6f4c5ea3**
 
 
 ***Project participants:***
-Olha Titova
+Olha Titova, 
 Evgeniy Shigartsov
 
 ***Tasks resolved by Olha Titova:***

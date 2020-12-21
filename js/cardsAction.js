@@ -4,14 +4,11 @@ import { VisitTherapist, VisitCardiologist, VisitDentist } from './CARD.js'
 import { createModal, createModalConfirm } from './createModal.js'
 import { CreateVisitForm } from './FORMS.js'
 import { CARDIOLOGIST, DENTIST, THERAPIST } from './CONSTS.js'
-
+export { getItems, createVisit, chooseVisitForm, renderCard }
 const DOMAIN = 'https://ajax.test-danit.com/api/v2/cards/'
-// const token = checkSession()
 const token = 'd6fcc7cd-ddeb-40b8-9cde-465a6f4c5ea3'
-// console.log(token)
 
-export async function getItems() {
-    // console.log(token)
+async function getItems() {
     const response = await fetch(`${DOMAIN}`, {
         method: 'GET',
         headers: {
@@ -25,10 +22,9 @@ export async function getItems() {
 
     return items
 }
+ const itemsRow = document.querySelector('#items-row')
 
-const itemsRow = document.querySelector('#items-row')
-
-export async function createVisit() {
+async function createVisit() {
     let allItems = await getItems()
     
     itemsRow.innerHTML = ''
@@ -114,11 +110,23 @@ function renderCard(visit) {
             <h5 class="card-title">${visit.name}</h5>
             <p class="card-text"><span class="text-secondary">Доктор:</span> ${visit.doctor}</p>
             <div class="text-show-more mb-3" hidden>
-                <p class="card-text"><span class="text-secondary">Цель визита:</span> ${visit.title}</p>
-                <p class="card-text"><span class="text-secondary">Приоритетность:</span> ${visit.priority}</p>
-                <p class="card-text"><span class="text-secondary">Состояние визита:</span> ${visit.isClosed}</p>
+                <p class="card-text">
+                    <span class="text-secondary">Цель визита:</span>
+                    <span class="visitor--visit-goal">${visit.title}</span>
+                </p>
+                <p class="card-text">
+                    <span class="text-secondary">Приоритетность:</span>
+                    <span class="visitor--priority">${visit.priority}</span>
+                </p>
+                <p class="card-text">
+                    <span class="text-secondary">Состояние визита:</span>
+                    <span class="visitor--status">${visit.isClosed}</span>
+                </p>
                 ${visit.renderVisit()}
-                <p class="card-text"><span class="text-secondary">Описание визита:</span> ${visit.description}</p>
+                <p class="card-text">
+                    <span class="text-secondary">Описание визита:</span> 
+                    <span class="visitor--description">${visit.description}</span>
+                </p>
             </div>
         
             <button type="button" class="btn btn-info mb-3 btn-show-more">Показать больше</button>
@@ -191,6 +199,8 @@ async function sendPUTRequest(e) {
     if (res.status === 200) {
         closeChangeVisitForm()
         const target = document.getElementById(reqBody.id)
+        console.log(target)
+        console.log(reqBody)
         target.innerHTML = renderCard(chooseVisitForm(reqBody))
         setEditBtnCardListeners(target)
     }

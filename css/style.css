@@ -3,29 +3,23 @@
 * {
     box-sizing: border-box;
 }
-
 body {
     font-family: 'Montserrat', sans-serif;
 }
-
 .visits {
     margin-top: 50px;
     margin-bottom: 50px;
 }
-
 form :nth-child(odd),
 form :nth-child(even) {
     margin-bottom: 10px;
 }
-
-.warning::placeholder {
-    color: tomato;
-}
-
 .warning {
     color: tomato;
 }
-
+.display-none {
+    display: none;
+}
 .drop-selected {
     opacity: 0.3;
 }

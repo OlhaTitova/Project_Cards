@@ -32,7 +32,6 @@ export function showVisitForm(event) {
     })
 
     const doctors = document.querySelector('.doctors-list')
-    doctors.addEventListener('change', () => showFields(document))
     doctors.addEventListener('change', () => showFields(visitForm.form))
 }
 function validateVisitForm() {
@@ -126,7 +125,6 @@ async function fillForm(event) {
         },
         body: JSON.stringify(requestBody, null, '\t'),
     }
-    console.log(requestObj.body)
     const data = await visitForm.submit(event, DOMAIN, requestObj, 'JSON')
     console.log(data)
     visitForm.clear()
